@@ -6,6 +6,7 @@ reinstalling the skill never erases progress:
   Windows:      %USERPROFILE%\.claude\socrates\profiles\<name>.md
   macOS/Linux:  ~/.claude/socrates/profiles/<name>.md
 Copy this file there on first run and fill it in. Keep it human-readable.
+If two learners could share a first name, disambiguate the filename (e.g. evan-m.md).
 -->
 
 - **Name:**

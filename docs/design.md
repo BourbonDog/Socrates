@@ -49,7 +49,7 @@ Socrates/
 4. **Diagnose subject + goal → pick a technique** (via `by-subject.md` + `techniques.md`), adapted by the profile.
 5. **Pick the mode** — study-*with*-me (skill runs it) or coach-me (learner drives).
 6. **Run the session** — retrieval-first, answers earned not given.
-7. **Close the loop** — log it; schedule next reviews at +2d / +5d / +12d / +30d, then monthly.
+7. **Close the loop** — log it; schedule next reviews at +2d / +5d / +12d / +30d, then monthly — collapsed into a daily runway when a test is sooner than the first interval.
 
 ## Profile format
 

@@ -50,6 +50,8 @@ Resolve that path for the current OS. If the folder doesn't exist, create it.
   3. What subjects are we working on?
   4. Anything about how you learn that I should adapt to? (e.g. ADHD, dyslexia, test anxiety — optional, only if you want to share. See `references/adaptations.md`.)
 
+Save the profile as `<name>.md`, lowercase. If two learners on one machine could share a first name, disambiguate the filename (e.g. `evan-m.md`) so profiles don't overwrite each other.
+
 Keep setup under a minute. Don't interrogate; a sparse profile is fine and fills in over time.
 
 ### 2. Run due reviews first
@@ -58,7 +60,7 @@ This is what turns "spaced repetition" from advice into a habit. Open the profil
 
 > "Before we start the new chapter — your Bio Ch. 6 review is due today. Quick 5-minute Blurt to lock it in?"
 
-A "review" is a short retrieval hit, not a reread: a 5-item quiz, a Blurt, one past-paper question, or a 60-second Feynman. Afterward, reschedule the item at its next interval (§7). If nothing is due, say so in a sentence and move on.
+A "review" is a short retrieval hit, not a reread: a 5-item quiz, a Blurt, one past-paper question, or a 60-second Feynman. Afterward, reschedule the item at its next interval (§7). If nothing is due, move on without dwelling — and on a **brand-new profile**, skip this step silently rather than announcing that an account you created ten seconds ago has nothing to review.
 
 ### 3. Take in what they brought
 
@@ -75,6 +77,7 @@ Two questions decide the technique:
 
 - **What subject is this?** → `references/by-subject.md` maps each subject to the techniques that work for it (and the traps to avoid — e.g. flashcards are weak for math, which is learned by *doing*).
 - **What's the goal right now?** Understand it / memorize it / practice-apply it / prep for a test. The goal often matters more than the subject.
+- **If there's a test or deadline, find out when.** "Quiz Friday" and "final in six weeks" lead to very different review schedules (§7), so pin the date down early.
 
 Pick one primary technique (occasionally two that stack — e.g. a Blurt, then targeted flashcards on the gaps). Look up *how to coach it* in `references/techniques.md`. Adapt the choice to the profile via `references/adaptations.md`. Then tell the student, in one line, **which technique and why** — naming it teaches them the toolkit so they can eventually self-coach.
 
@@ -98,7 +101,8 @@ Run the chosen technique using the playbook in `references/techniques.md`. Whate
 Two things end every session:
 
 - **Log it** in the profile (what was studied and how it went — e.g. "Bio Ch. 6 Blurt, ~70% recall").
-- **Schedule the next review(s)** using expanding intervals from today: **+2 days → +5 → +12 → +30**, then monthly until the exam. Push items they nailed further out; pull shaky ones closer. Write the dates into the profile's Review schedule so §2 can surface them next time.
+- **Schedule the next review(s).** The default is expanding intervals from today — **+2 days → +5 → +12 → +30**, then monthly — built for durable, long-term retention. Push items they nailed further out; pull shaky ones closer. Write the dates into the profile's Review schedule so §2 can surface them next time.
+- **When a test is sooner than the first interval, the default is wrong.** A quiz in two days can't wait for a +2-day review (that lands *on* the quiz), and a +5 review falls *after* it. Collapse the schedule into the runway instead: a short retrieval *every day* until the test, plus a 60-second warm-up on the day. Then, for anything that has to outlast the test (a cumulative final, the rest of the course), resume the expanding intervals *afterward*. Active cramming beats nothing — and the spacing after the test is what makes it stay.
 
 Close with one honest line on whether it's sticking — judged by what they could produce without notes, not by vibes — and the single most useful thing to do next time.
 
