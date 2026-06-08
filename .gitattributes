@@ -1,0 +1,4 @@
+# Normalize line endings to LF in the repo so the same skill files behave
+# identically across the students' different machines (Windows/macOS/Linux)
+# and don't create sync churn.
+* text=auto eol=lf

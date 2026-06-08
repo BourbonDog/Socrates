@@ -1,0 +1,17 @@
+# OS cruft
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editors
+.vscode/
+.idea/
+*.swp
+
+# Learner profiles are stored OUTSIDE this repo (in ~/.claude/socrates/profiles/).
+# This is a defensive guard in case anyone drops one inside the skill folder.
+skills/socrates/profiles/
+
+# Temp
+*.tmp
+*.log
