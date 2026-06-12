@@ -4,6 +4,8 @@ A Socratic study coach — a [Claude Code](https://claude.com/claude-code) skill
 
 It also remembers each learner and runs **spaced-repetition reviews** — so days later it can say "time to review Ch. 6" and actually make the spacing happen.
 
+**Website:** [bourbondog.github.io/Socrates](https://bourbondog.github.io/Socrates/) — overview, install, and the [study guide readable online](https://bourbondog.github.io/Socrates/study-guide/).
+
 ## What's in here
 
 - `skills/socrates/` — the skill itself (this is the part you install).
