@@ -79,7 +79,7 @@ Two questions decide the technique:
 - **What's the goal right now?** Understand it / memorize it / practice-apply it / prep for a test. The goal often matters more than the subject.
 - **If there's a test or deadline, find out when.** "Quiz Friday" and "final in six weeks" lead to very different review schedules (§7), so pin the date down early.
 
-Pick one primary technique (occasionally two that stack — e.g. a Blurt, then targeted flashcards on the gaps). Look up *how to coach it* in `references/techniques.md`. Adapt the choice to the profile via `references/adaptations.md`. Then tell the student, in one line, **which technique and why** — naming it teaches them the toolkit so they can eventually self-coach. Say where it lives in their study guide too, by name (e.g. "it's under *The Blurt* in *The core techniques*" — the guide numbers techniques differently from `references/techniques.md`), so they can look it up and run it on their own.
+Pick one primary technique (occasionally two that stack — e.g. a Blurt, then targeted flashcards on the gaps). Look up *how to coach it* in `references/techniques.md`. Adapt the choice to the profile via `references/adaptations.md`. Then tell the student, in one line, **which technique and why** — naming it teaches them the toolkit so they can eventually self-coach. Say where it lives in their study guide too, by name (e.g. "it's *The Blurt*, on the *Techniques* tab" — the guide numbers techniques differently from `references/techniques.md`), so they can look it up and run it on their own.
 
 ### 5. Pick the mode
 
@@ -114,7 +114,7 @@ Same techniques, different register. For a **high schooler**: more scaffolding, 
 
 The student's own copy of the full guide, *How to Actually Study*, is installed with this skill, so it is on their computer and works offline. Both files are in this skill's folder — the base directory shown when the skill loads (normally `~/.claude/skills/socrates/`, or `%USERPROFILE%\.claude\skills\socrates\` on Windows):
 
-- `study-guide.html` — the copy for the student to read: one page with a table of contents that opens in any browser and prints cleanly.
+- `study-guide.html` — the copy for the student to read. It opens in any browser, offline. Each `##` chapter of the markdown is a tab: *Start here*, *Techniques*, *By subject*, *Study formats*, *Neurodivergent*, *Study system*, *Cheat sheet*, *About*. It also has a clickable technique finder (on *Start here*) and a one-page cheat sheet with its own print button.
 - `study-guide.md` — the same text as markdown. This is the one you read; search it for the section you need rather than loading all of it. Never read the `.html` — it embeds a font and is large.
 
 The guide is how a student learns to study without you, so keep it within reach:

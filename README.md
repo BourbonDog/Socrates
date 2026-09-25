@@ -10,7 +10,7 @@ Socrates is built on *How to Actually Study*, a practical guide to studying well
 
 The guide installs with the skill, so every student has their own copy, offline:
 
-- `study-guide.html` — the readable copy. Double-click it to open it in any browser; it prints cleanly.
+- `study-guide.html` — the readable copy, in chapters, with a technique finder and a printable one-page cheat sheet. Double-click it to open it in any browser; no internet needed.
 - `study-guide.md` — the same text, which Socrates reads when it explains a technique.
 
 After installing, the guide is at `%USERPROFILE%\.claude\skills\socrates\study-guide.html` on Windows, or `~/.claude/skills/socrates/study-guide.html` on macOS and Linux. You can also just ask Socrates: "show me the study guide." In this repository it's [`skills/socrates/study-guide.md`](skills/socrates/study-guide.md).

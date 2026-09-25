@@ -1,7 +1,7 @@
 /* Socrates — site styles, shared by the home page and the study guide.
-   tools/build-guide.mjs also inlines this file, with the fonts embedded, into
-   skills/socrates/study-guide.html so the installed copy of the guide works offline.
-   Hand-maintained; no build step for the site itself. */
+   tools/build-guide.mjs also inlines this file, with the fonts embedded,
+   into skills/socrates/study-guide.html so the installed copy of the guide
+   works offline. Hand-maintained; no build step for the site itself. */
 
 @font-face {
   font-family: "Source Serif 4";
@@ -28,8 +28,23 @@
   --rule: #e4e1da;
   --rule-strong: #cdc9bf;
   --tint: #f7f6f2;
+  --card: #ffffff;
+  --numeral: #e4dfd3;
   --accent: #8b2a1f;
   --accent-hover: #6b1f16;
+  --good: #3d6a4a;
+  --bad: #8b2a1f;
+  --howto-bg: #f8f6f1;
+  --howto-rule: #c7b58f;
+  --adhd-bg: #eef3f8;
+  --adhd-rule: #6a8bb0;
+  --adhd-ink: #3c5f86;
+  --tip-bg: #eef5f0;
+  --tip-rule: #6e9a79;
+  --tip-ink: #3d6a4a;
+  --caution-bg: #f9f3e6;
+  --caution-rule: #bb9048;
+  --caution-ink: #80601f;
   --font: "Source Serif 4", "Iowan Old Style", "Sitka Text", Georgia, serif;
   --mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
   --measure: 38em;
@@ -44,8 +59,23 @@
     --rule: #2f2d29;
     --rule-strong: #46433d;
     --tint: #1e1d1a;
+    --card: #1a1917;
+    --numeral: #36332d;
     --accent: #e3907f;
     --accent-hover: #f0ab9c;
+    --good: #8fc29f;
+    --bad: #e3907f;
+    --howto-bg: #201e1a;
+    --howto-rule: #7a6843;
+    --adhd-bg: #182029;
+    --adhd-rule: #5a7ea6;
+    --adhd-ink: #9fbde0;
+    --tip-bg: #172119;
+    --tip-rule: #5f8a6b;
+    --tip-ink: #9fc7aa;
+    --caution-bg: #262015;
+    --caution-rule: #a37f3c;
+    --caution-ink: #e0bd7a;
   }
 }
 
@@ -80,7 +110,7 @@ a:hover { color: var(--accent-hover); }
 
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
-h1, h2, h3 { font-weight: 600; line-height: 1.15; margin: 0; }
+h1, h2, h3, h4 { font-weight: 600; line-height: 1.15; margin: 0; }
 
 strong, b { font-weight: 600; }
 
@@ -184,8 +214,8 @@ code {
 .prompts li { margin: 0 0 6px; }
 .prompts .aside { color: var(--faint); }
 
-.steps { list-style: none; counter-reset: step; padding: 0; margin: 18px 0 0; }
-.steps li {
+.steps-list { list-style: none; counter-reset: step; padding: 0; margin: 18px 0 0; }
+.steps-list li {
   counter-increment: step;
   display: grid;
   grid-template-columns: 2em minmax(0, 1fr);
@@ -193,8 +223,8 @@ code {
   padding: 13px 0;
   border-top: 1px solid var(--rule);
 }
-.steps li:last-child { border-bottom: 1px solid var(--rule); }
-.steps li::before { content: counter(step) "."; color: var(--faint); }
+.steps-list li:last-child { border-bottom: 1px solid var(--rule); }
+.steps-list li::before { content: counter(step) "."; color: var(--faint); }
 
 .dialogue { margin: 18px 0 0; }
 .dialogue p { margin: 0 0 12px; padding-left: 6.4em; text-indent: -6.4em; }
@@ -237,9 +267,9 @@ pre {
 }
 pre code { background: none; padding: 0; font-size: 14.5px; }
 
-/* ---------- study guide ---------- */
+/* ---------- study guide: header and chapter tabs ---------- */
 
-.guide-head { padding: 76px 0 52px; border-bottom: 1px solid var(--rule); }
+.guide-head { padding: 72px 0 40px; }
 
 .guide-head h1 {
   font-size: clamp(40px, 5.6vw, 58px);
@@ -256,58 +286,204 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
   margin: 20px 0 0;
 }
 
-.guide-layout {
-  display: grid;
-  grid-template-columns: 210px minmax(0, 1fr);
-  gap: 52px;
-  align-items: start;
-  padding-top: 52px;
-  padding-bottom: 96px;
+.meta {
+  margin: 18px 0 0;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+  font-size: 17px;
 }
 
-.toc {
+.chapters {
   position: sticky;
-  top: 24px;
-  max-height: calc(100vh - 48px);
-  overflow-y: auto;
-  font-size: 16px;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
 }
-.toc-title {
+.chapters ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 0 22px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.chapters ol::-webkit-scrollbar { display: none; }
+.chapters li { flex: none; }
+.chapters a {
+  display: block;
+  padding: 13px 0 11px;
+  font-size: 16.5px;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+.chapters a:hover { color: var(--ink); }
+.chapters a[aria-current] { color: var(--ink); border-bottom-color: var(--accent); }
+.chapters .all { display: none; margin-left: auto; }
+.js .chapters .all { display: block; }
+.chapters .all a { font-style: italic; color: var(--faint); }
+
+/* ---------- study guide: chapters ---------- */
+
+.guide { max-width: 46em; padding: 44px 0 96px; }
+
+.chapter { scroll-margin-top: 64px; }
+.chapter + .chapter { margin-top: 80px; padding-top: 44px; border-top: 1px solid var(--rule); }
+.chapter[hidden] { margin: 0 !important; padding: 0 !important; border: 0 !important; }
+/* One chapter at a time: no separator above it. "Whole guide" keeps the separators. */
+.tabbed:not(.show-all) .chapter { margin-top: 0; padding-top: 0; border-top: 0; }
+
+.chapter-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 18px;
+  margin: 0 0 18px;
+}
+.chapter-num {
+  flex-basis: 100%;
+  margin: 0;
   font-variant-caps: all-small-caps;
   letter-spacing: 0.07em;
   color: var(--faint);
-  margin: 0 0 10px;
+  font-size: 17px;
 }
-.toc ol { list-style: none; margin: 0; padding: 0; }
-.toc a {
+.chapter-head h2 { font-size: 38px; line-height: 1.12; }
+.chapter-head + p { font-size: 20px; color: var(--muted); }
+
+.guide p { margin: 0 0 16px; }
+.guide ul, .guide ol { margin: 0 0 16px; padding-left: 1.3em; }
+.guide li { margin: 0 0 7px; padding-left: 0.2em; }
+.guide li::marker { color: var(--faint); }
+
+.topic { margin: 48px 0 0; scroll-margin-top: 64px; }
+.topic h3, .card h3 { font-size: 24px; line-height: 1.2; margin: 0 0 12px; }
+
+.step-label {
+  margin: 0 0 2px !important;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.07em;
+  color: var(--accent);
+  font-size: 17px;
+}
+
+.h3-sub {
   display: block;
-  padding: 5px 0 5px 14px;
-  border-left: 1px solid var(--rule);
+  margin-top: 4px;
+  font-size: 18.5px;
+  font-weight: 400;
+  font-style: italic;
   color: var(--muted);
-  text-decoration: none;
-  line-height: 1.35;
 }
-.toc a:hover { color: var(--ink); }
-.toc a[aria-current] { color: var(--ink); border-left: 2px solid var(--accent); padding-left: 13px; }
 
-.prose { min-width: 0; max-width: 39em; }
+.chapter-next { margin: 44px 0 0 !important; padding-top: 18px; border-top: 1px solid var(--rule); }
 
-.prose > h2 {
-  font-size: 32px;
-  margin: 76px 0 18px;
-  padding-top: 26px;
-  border-top: 1px solid var(--rule);
-  scroll-margin-top: 20px;
+/* ---------- study guide: cards ---------- */
+
+.card {
+  position: relative;
+  margin: 0 0 22px;
+  padding: 26px 30px 12px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  scroll-margin-top: 64px;
 }
-.prose > h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.card .numeral {
+  position: absolute;
+  top: 12px;
+  right: 22px;
+  font-size: 64px;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--numeral);
+}
+.technique h3 { padding-right: 56px; }
 
-.prose > h3 { font-size: 23px; margin: 46px 0 12px; scroll-margin-top: 20px; }
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0 0 22px;
+}
+.card-grid .card { margin: 0; }
+.card-grid .card h3 { font-size: 22px; }
 
-.prose p { margin: 0 0 16px; }
+/* ---------- study guide: panels, callouts, tags ---------- */
 
-.prose ul, .prose ol { margin: 0 0 18px; padding-left: 1.3em; }
-.prose li { margin: 0 0 8px; padding-left: 0.2em; }
-.prose li::marker { color: var(--faint); }
+.tag {
+  margin: 0 0 4px !important;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.07em;
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.howto {
+  margin: 16px 0;
+  padding: 14px 20px 6px;
+  background: var(--howto-bg);
+  border-left: 3px solid var(--howto-rule);
+  border-radius: 0 4px 4px 0;
+  font-size: 17.5px;
+  line-height: 1.55;
+}
+.howto .tag { color: var(--accent); }
+.howto p { margin: 0 0 10px; }
+
+.steps { list-style: none; counter-reset: step; padding: 0 !important; margin: 6px 0 8px !important; }
+.steps li { counter-increment: step; position: relative; padding-left: 40px !important; margin: 0 0 12px !important; }
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 26px;
+  text-align: center;
+}
+.steps li > strong:first-child { display: block; }
+
+.chips { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0 !important; margin: 4px 0 16px !important; }
+.chips li {
+  margin: 0 !important;
+  padding: 2px 12px !important;
+  font-size: 15px;
+  color: var(--muted);
+  background: var(--tint);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+}
+.chips li::before { content: "✓\00a0"; color: var(--good); }
+
+.callout {
+  margin: 16px 0;
+  padding: 14px 20px;
+  background: var(--tint);
+  border-left: 3px solid var(--rule-strong);
+  border-radius: 0 4px 4px 0;
+  font-size: 17.5px;
+  line-height: 1.55;
+}
+.callout p { margin: 0; }
+.callout .tag { color: var(--faint); }
+.callout.adhd { background: var(--adhd-bg); border-left-color: var(--adhd-rule); }
+.callout.adhd .tag { color: var(--adhd-ink); }
+.callout.tip { background: var(--tip-bg); border-left-color: var(--tip-rule); }
+.callout.tip .tag { color: var(--tip-ink); }
+.callout.caution { background: var(--caution-bg); border-left-color: var(--caution-rule); }
+.callout.caution .tag { color: var(--caution-ink); }
 
 .pullquote {
   margin: 30px 0;
@@ -319,31 +495,28 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 }
 .pullquote p { margin: 0; }
 
-.callout {
-  margin: 22px 0;
-  padding: 14px 20px;
-  background: var(--tint);
-  border-left: 2px solid var(--rule-strong);
-  font-size: 17.5px;
-  line-height: 1.55;
-}
-.callout p { margin: 0; }
-.callout p > strong:first-child {
-  font-variant-caps: all-small-caps;
-  letter-spacing: 0.05em;
-  font-size: 1.06em;
-}
+.myths { list-style: none; padding: 0 !important; margin: 0 0 20px !important; }
+.myths li { position: relative; margin: 0 !important; padding: 13px 0 13px 34px !important; border-top: 1px solid var(--rule); }
+.myths li:last-child { border-bottom: 1px solid var(--rule); }
+.myths li::before { content: "✕"; position: absolute; left: 6px; top: 13px; color: var(--bad); }
+
+.avoid, .best { position: relative; padding-left: 26px; }
+.avoid::before, .best::before { position: absolute; left: 2px; }
+.avoid::before { content: "✕"; color: var(--bad); }
+.best::before { content: "✓"; color: var(--good); }
+
+/* ---------- study guide: tables, finder, timeline ---------- */
 
 .table-wrap { overflow-x: auto; margin: 18px 0 26px; }
 
-.prose table { width: 100%; border-collapse: collapse; font-size: 16.5px; line-height: 1.45; }
-.prose th, .prose td {
+.guide table { width: 100%; border-collapse: collapse; font-size: 16.5px; line-height: 1.45; }
+.guide th, .guide td {
   text-align: left;
   vertical-align: top;
   padding: 10px 16px 10px 0;
   border-bottom: 1px solid var(--rule);
 }
-.prose th {
+.guide th {
   font-weight: 400;
   font-variant-caps: all-small-caps;
   letter-spacing: 0.06em;
@@ -352,9 +525,135 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
   border-bottom-color: var(--rule-strong);
 }
 
+.schedule td:first-child { white-space: nowrap; color: var(--faint); font-variant-numeric: tabular-nums; }
+.schedule td:nth-child(2) { font-weight: 600; }
+.schedule tr.break td { background: var(--tint); }
+.schedule tr.break td:nth-child(2) { font-weight: 400; font-style: italic; }
+
+.finder {
+  margin: 8px 0 20px;
+  padding: 20px 24px 22px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+.finder .q {
+  margin: 0 0 8px;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.07em;
+  color: var(--faint);
+  font-size: 17px;
+}
+.picks { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+.pick {
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.3;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.pick:hover { border-color: var(--ink); }
+.pick[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.answer {
+  padding: 14px 18px;
+  background: var(--tint);
+  border-radius: 4px;
+  font-size: 17.5px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.answer strong { display: block; margin-bottom: 2px; color: var(--ink); }
+.finder-tables.enhanced { display: none; }
+
+.timeline {
+  list-style: none;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  padding: 0 !important;
+  margin: 20px 0 24px !important;
+}
+.timeline li { position: relative; margin: 0 !important; padding: 26px 4px 0 !important; text-align: center; }
+.timeline li::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--rule);
+}
+.timeline li:last-child::after { display: none; }
+.timeline li::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: var(--bg);
+}
+.timeline li:first-child::before { background: var(--accent); }
+.timeline b { display: block; font-size: 17px; }
+.timeline span { display: block; font-size: 15px; line-height: 1.35; color: var(--faint); }
+
+/* ---------- study guide: cheat sheet ---------- */
+
+.print-cheatsheet {
+  display: none;
+  font: inherit;
+  font-size: 16px;
+  color: var(--accent);
+  background: none;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 3px 12px;
+  cursor: pointer;
+}
+.js .print-cheatsheet { display: inline-block; }
+
+.glance {
+  list-style: none;
+  counter-reset: glance;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0 !important;
+  margin: 10px 0 24px !important;
+}
+.glance li {
+  counter-increment: glance;
+  margin: 0 !important;
+  padding: 12px 14px !important;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+.glance li::before { content: counter(glance); margin-right: 6px; color: var(--accent); font-weight: 600; }
+.glance span { display: block; margin-top: 3px; color: var(--muted); }
+
+.stop-start { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 10px 0 24px; }
+.list-card { padding: 16px 20px; border: 1px solid var(--rule); border-radius: 6px; }
+.list-card.stop { border-top: 3px solid var(--bad); }
+.list-card.start { border-top: 3px solid var(--good); }
+.list-card h4 { margin: 0 0 8px; font-size: 18.5px; }
+.list-card ul { list-style: none; padding: 0 !important; margin: 0 !important; font-size: 16.5px; }
+.list-card li { position: relative; margin: 0 !important; padding: 3px 0 3px 24px !important; }
+.list-card li::before { position: absolute; left: 2px; }
+.list-card.stop li::before { content: "✕"; color: var(--bad); }
+.list-card.start li::before { content: "✓"; color: var(--good); }
+
 /* The reference list: hanging indent, no bullets. */
-.prose #references + ul { list-style: none; padding-left: 1.6em; font-size: 16.5px; line-height: 1.5; }
-.prose #references + ul li { text-indent: -1.6em; padding-left: 0; margin-bottom: 10px; }
+#references ul { list-style: none; padding-left: 1.6em; font-size: 16.5px; line-height: 1.5; }
+#references li { text-indent: -1.6em; padding-left: 0; margin-bottom: 10px; }
 
 /* ---------- footer ---------- */
 
@@ -365,19 +664,27 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 
 /* ---------- narrow screens ---------- */
 
-@media (max-width: 860px) {
+@media screen and (max-width: 860px) {
   body { font-size: 18px; }
   .wrap { padding: 0 20px; }
   .hero { padding: 56px 0 52px; }
   .lede, .subtitle { font-size: 19.5px; }
   .section { padding: 48px 0 56px; }
-  .section-grid, .guide-layout { grid-template-columns: minmax(0, 1fr); gap: 10px; }
-  .guide-head { padding: 48px 0 36px; }
-  .guide-layout { padding-top: 28px; gap: 36px; }
-  .toc { position: static; max-height: none; overflow: visible; border: 1px solid var(--rule); padding: 14px 18px; }
-  .prose > h2 { font-size: 28px; margin-top: 60px; }
+  .section-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   .dialogue p { padding-left: 0; text-indent: 0; }
   .dialogue .speaker { display: block; width: auto; }
+
+  .guide-head { padding: 44px 0 28px; }
+  .guide { padding-top: 32px; }
+  .chapter-head h2 { font-size: 30px; }
+  .card { padding: 20px 20px 8px; }
+  .card .numeral { font-size: 48px; right: 16px; }
+  .technique h3 { padding-right: 40px; }
+  .card-grid, .stop-start, .glance { grid-template-columns: minmax(0, 1fr); }
+  .timeline { grid-auto-flow: row; }
+  .timeline li { padding: 0 0 14px 30px !important; text-align: left; }
+  .timeline li::before { top: 5px; left: 0; margin-left: 0; }
+  .timeline li::after { top: 12px; left: 6px; width: 2px; height: 100%; }
 }
 
 /* ---------- print ---------- */
@@ -385,17 +692,41 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 @media print {
   :root {
     --bg: #ffffff; --ink: #000000; --muted: #222222; --faint: #555555;
-    --rule: #bbbbbb; --rule-strong: #888888; --tint: #f2f2f2; --accent: #000000;
+    --rule: #bbbbbb; --rule-strong: #888888; --tint: #f2f2f2; --card: #ffffff; --accent: #000000;
   }
   body { font-size: 11pt; line-height: 1.45; }
-  .site-nav, .toc, .site-foot, .copy { display: none; }
+  .site-nav, .site-foot, .copy, .chapters, .chapter-next, .finder, .print-cheatsheet { display: none !important; }
   .wrap { max-width: none; padding: 0; }
-  .guide-head { padding: 0 0 14pt; }
-  .guide-layout { display: block; padding: 18pt 0 0; }
-  .prose { max-width: none; }
+  .guide-head { padding: 0 0 12pt; }
+  .guide { max-width: none; padding: 0; }
+  .chapter[hidden] { display: block !important; content-visibility: visible !important; }
+  .chapter + .chapter { margin-top: 24pt; padding-top: 12pt; }
+  .finder-tables.enhanced { display: block !important; }
   a { color: inherit; text-decoration: none; }
-  .prose > h2 { margin-top: 26pt; padding-top: 10pt; break-after: avoid; }
-  .prose > h3 { margin-top: 16pt; break-after: avoid; }
-  .callout, .pullquote, tr { break-inside: avoid; }
-  #the-one-page-cheat-sheet, #about-this-guide { break-before: page; border-top: 0; padding-top: 0; margin-top: 0; }
+  h2, h3 { break-after: avoid; }
+  .callout, .howto, .pullquote, .glance li, .list-card, tr { break-inside: avoid; }
+  #the-one-page-cheat-sheet, #about-this-guide { break-before: page; border-top: 0; margin-top: 0; }
+  /* Keep the cheat sheet to one page. */
+  #the-one-page-cheat-sheet .chapter-num { display: none; }
+  #the-one-page-cheat-sheet .chapter-head { margin-bottom: 4pt; }
+  #the-one-page-cheat-sheet .chapter-head h2 { font-size: 20pt; }
+  #the-one-page-cheat-sheet .chapter-head + p { font-size: 11pt; }
+  #the-one-page-cheat-sheet p { margin-bottom: 4pt; font-size: 10.5pt; }
+  #the-one-page-cheat-sheet h3 { font-size: 12.5pt; margin: 0 0 3pt; }
+  #the-one-page-cheat-sheet .topic { margin-top: 5pt; }
+  #the-one-page-cheat-sheet .timeline li { padding-top: 16px !important; }
+  .glance { gap: 5pt; margin: 4pt 0 8pt !important; }
+  .glance li { padding: 4pt 7pt !important; font-size: 9pt; line-height: 1.28; }
+  .stop-start { gap: 8pt; margin: 4pt 0 8pt; }
+  .list-card { padding: 7pt 10pt; }
+  .list-card h4 { font-size: 10.5pt; margin-bottom: 3pt; }
+  .list-card ul { font-size: 9.5pt; }
+  .list-card li { padding: 1pt 0 1pt 16pt !important; }
+  .timeline { margin: 8pt 0 8pt !important; }
+  .timeline b { font-size: 10pt; }
+  .timeline span { font-size: 8.5pt; }
+  #the-one-page-cheat-sheet .callout { margin: 6pt 0; padding: 6pt 10pt; font-size: 9.5pt; }
+  body.cheatsheet-only .guide-head,
+  body.cheatsheet-only .chapter:not(#the-one-page-cheat-sheet) { display: none !important; }
+  body.cheatsheet-only #the-one-page-cheat-sheet { break-before: auto; }
 }

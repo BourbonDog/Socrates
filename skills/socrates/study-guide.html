@@ -9,9 +9,9 @@
 <style>
 /* Source Serif 4 is embedded below. Copyright 2014 - 2023 Adobe (http://www.adobe.com/), with Reserved Font Name 'Source'. Licensed under the SIL Open Font License 1.1: https://openfontlicense.org */
 /* Socrates — site styles, shared by the home page and the study guide.
-   tools/build-guide.mjs also inlines this file, with the fonts embedded, into
-   skills/socrates/study-guide.html so the installed copy of the guide works offline.
-   Hand-maintained; no build step for the site itself. */
+   tools/build-guide.mjs also inlines this file, with the fonts embedded,
+   into skills/socrates/study-guide.html so the installed copy of the guide
+   works offline. Hand-maintained; no build step for the site itself. */
 
 @font-face {
   font-family: "Source Serif 4";
@@ -38,8 +38,23 @@
   --rule: #e4e1da;
   --rule-strong: #cdc9bf;
   --tint: #f7f6f2;
+  --card: #ffffff;
+  --numeral: #e4dfd3;
   --accent: #8b2a1f;
   --accent-hover: #6b1f16;
+  --good: #3d6a4a;
+  --bad: #8b2a1f;
+  --howto-bg: #f8f6f1;
+  --howto-rule: #c7b58f;
+  --adhd-bg: #eef3f8;
+  --adhd-rule: #6a8bb0;
+  --adhd-ink: #3c5f86;
+  --tip-bg: #eef5f0;
+  --tip-rule: #6e9a79;
+  --tip-ink: #3d6a4a;
+  --caution-bg: #f9f3e6;
+  --caution-rule: #bb9048;
+  --caution-ink: #80601f;
   --font: "Source Serif 4", "Iowan Old Style", "Sitka Text", Georgia, serif;
   --mono: ui-monospace, "Cascadia Mono", "SF Mono", Menlo, Consolas, monospace;
   --measure: 38em;
@@ -54,8 +69,23 @@
     --rule: #2f2d29;
     --rule-strong: #46433d;
     --tint: #1e1d1a;
+    --card: #1a1917;
+    --numeral: #36332d;
     --accent: #e3907f;
     --accent-hover: #f0ab9c;
+    --good: #8fc29f;
+    --bad: #e3907f;
+    --howto-bg: #201e1a;
+    --howto-rule: #7a6843;
+    --adhd-bg: #182029;
+    --adhd-rule: #5a7ea6;
+    --adhd-ink: #9fbde0;
+    --tip-bg: #172119;
+    --tip-rule: #5f8a6b;
+    --tip-ink: #9fc7aa;
+    --caution-bg: #262015;
+    --caution-rule: #a37f3c;
+    --caution-ink: #e0bd7a;
   }
 }
 
@@ -90,7 +120,7 @@ a:hover { color: var(--accent-hover); }
 
 :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
 
-h1, h2, h3 { font-weight: 600; line-height: 1.15; margin: 0; }
+h1, h2, h3, h4 { font-weight: 600; line-height: 1.15; margin: 0; }
 
 strong, b { font-weight: 600; }
 
@@ -194,8 +224,8 @@ code {
 .prompts li { margin: 0 0 6px; }
 .prompts .aside { color: var(--faint); }
 
-.steps { list-style: none; counter-reset: step; padding: 0; margin: 18px 0 0; }
-.steps li {
+.steps-list { list-style: none; counter-reset: step; padding: 0; margin: 18px 0 0; }
+.steps-list li {
   counter-increment: step;
   display: grid;
   grid-template-columns: 2em minmax(0, 1fr);
@@ -203,8 +233,8 @@ code {
   padding: 13px 0;
   border-top: 1px solid var(--rule);
 }
-.steps li:last-child { border-bottom: 1px solid var(--rule); }
-.steps li::before { content: counter(step) "."; color: var(--faint); }
+.steps-list li:last-child { border-bottom: 1px solid var(--rule); }
+.steps-list li::before { content: counter(step) "."; color: var(--faint); }
 
 .dialogue { margin: 18px 0 0; }
 .dialogue p { margin: 0 0 12px; padding-left: 6.4em; text-indent: -6.4em; }
@@ -247,9 +277,9 @@ pre {
 }
 pre code { background: none; padding: 0; font-size: 14.5px; }
 
-/* ---------- study guide ---------- */
+/* ---------- study guide: header and chapter tabs ---------- */
 
-.guide-head { padding: 76px 0 52px; border-bottom: 1px solid var(--rule); }
+.guide-head { padding: 72px 0 40px; }
 
 .guide-head h1 {
   font-size: clamp(40px, 5.6vw, 58px);
@@ -266,58 +296,204 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
   margin: 20px 0 0;
 }
 
-.guide-layout {
-  display: grid;
-  grid-template-columns: 210px minmax(0, 1fr);
-  gap: 52px;
-  align-items: start;
-  padding-top: 52px;
-  padding-bottom: 96px;
+.meta {
+  margin: 18px 0 0;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.06em;
+  color: var(--faint);
+  font-size: 17px;
 }
 
-.toc {
+.chapters {
   position: sticky;
-  top: 24px;
-  max-height: calc(100vh - 48px);
-  overflow-y: auto;
-  font-size: 16px;
+  top: 0;
+  z-index: 10;
+  background: var(--bg);
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
 }
-.toc-title {
+.chapters ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  gap: 0 22px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.chapters ol::-webkit-scrollbar { display: none; }
+.chapters li { flex: none; }
+.chapters a {
+  display: block;
+  padding: 13px 0 11px;
+  font-size: 16.5px;
+  color: var(--muted);
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 2px solid transparent;
+}
+.chapters a:hover { color: var(--ink); }
+.chapters a[aria-current] { color: var(--ink); border-bottom-color: var(--accent); }
+.chapters .all { display: none; margin-left: auto; }
+.js .chapters .all { display: block; }
+.chapters .all a { font-style: italic; color: var(--faint); }
+
+/* ---------- study guide: chapters ---------- */
+
+.guide { max-width: 46em; padding: 44px 0 96px; }
+
+.chapter { scroll-margin-top: 64px; }
+.chapter + .chapter { margin-top: 80px; padding-top: 44px; border-top: 1px solid var(--rule); }
+.chapter[hidden] { margin: 0 !important; padding: 0 !important; border: 0 !important; }
+/* One chapter at a time: no separator above it. "Whole guide" keeps the separators. */
+.tabbed:not(.show-all) .chapter { margin-top: 0; padding-top: 0; border-top: 0; }
+
+.chapter-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 18px;
+  margin: 0 0 18px;
+}
+.chapter-num {
+  flex-basis: 100%;
+  margin: 0;
   font-variant-caps: all-small-caps;
   letter-spacing: 0.07em;
   color: var(--faint);
-  margin: 0 0 10px;
+  font-size: 17px;
 }
-.toc ol { list-style: none; margin: 0; padding: 0; }
-.toc a {
+.chapter-head h2 { font-size: 38px; line-height: 1.12; }
+.chapter-head + p { font-size: 20px; color: var(--muted); }
+
+.guide p { margin: 0 0 16px; }
+.guide ul, .guide ol { margin: 0 0 16px; padding-left: 1.3em; }
+.guide li { margin: 0 0 7px; padding-left: 0.2em; }
+.guide li::marker { color: var(--faint); }
+
+.topic { margin: 48px 0 0; scroll-margin-top: 64px; }
+.topic h3, .card h3 { font-size: 24px; line-height: 1.2; margin: 0 0 12px; }
+
+.step-label {
+  margin: 0 0 2px !important;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.07em;
+  color: var(--accent);
+  font-size: 17px;
+}
+
+.h3-sub {
   display: block;
-  padding: 5px 0 5px 14px;
-  border-left: 1px solid var(--rule);
+  margin-top: 4px;
+  font-size: 18.5px;
+  font-weight: 400;
+  font-style: italic;
   color: var(--muted);
-  text-decoration: none;
-  line-height: 1.35;
 }
-.toc a:hover { color: var(--ink); }
-.toc a[aria-current] { color: var(--ink); border-left: 2px solid var(--accent); padding-left: 13px; }
 
-.prose { min-width: 0; max-width: 39em; }
+.chapter-next { margin: 44px 0 0 !important; padding-top: 18px; border-top: 1px solid var(--rule); }
 
-.prose > h2 {
-  font-size: 32px;
-  margin: 76px 0 18px;
-  padding-top: 26px;
-  border-top: 1px solid var(--rule);
-  scroll-margin-top: 20px;
+/* ---------- study guide: cards ---------- */
+
+.card {
+  position: relative;
+  margin: 0 0 22px;
+  padding: 26px 30px 12px;
+  background: var(--card);
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  scroll-margin-top: 64px;
 }
-.prose > h2:first-child { margin-top: 0; padding-top: 0; border-top: 0; }
+.card .numeral {
+  position: absolute;
+  top: 12px;
+  right: 22px;
+  font-size: 64px;
+  font-weight: 300;
+  line-height: 1;
+  color: var(--numeral);
+}
+.technique h3 { padding-right: 56px; }
 
-.prose > h3 { font-size: 23px; margin: 46px 0 12px; scroll-margin-top: 20px; }
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0 0 22px;
+}
+.card-grid .card { margin: 0; }
+.card-grid .card h3 { font-size: 22px; }
 
-.prose p { margin: 0 0 16px; }
+/* ---------- study guide: panels, callouts, tags ---------- */
 
-.prose ul, .prose ol { margin: 0 0 18px; padding-left: 1.3em; }
-.prose li { margin: 0 0 8px; padding-left: 0.2em; }
-.prose li::marker { color: var(--faint); }
+.tag {
+  margin: 0 0 4px !important;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.07em;
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.howto {
+  margin: 16px 0;
+  padding: 14px 20px 6px;
+  background: var(--howto-bg);
+  border-left: 3px solid var(--howto-rule);
+  border-radius: 0 4px 4px 0;
+  font-size: 17.5px;
+  line-height: 1.55;
+}
+.howto .tag { color: var(--accent); }
+.howto p { margin: 0 0 10px; }
+
+.steps { list-style: none; counter-reset: step; padding: 0 !important; margin: 6px 0 8px !important; }
+.steps li { counter-increment: step; position: relative; padding-left: 40px !important; margin: 0 0 12px !important; }
+.steps li::before {
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 2px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 26px;
+  text-align: center;
+}
+.steps li > strong:first-child { display: block; }
+
+.chips { list-style: none; display: flex; flex-wrap: wrap; gap: 8px; padding: 0 !important; margin: 4px 0 16px !important; }
+.chips li {
+  margin: 0 !important;
+  padding: 2px 12px !important;
+  font-size: 15px;
+  color: var(--muted);
+  background: var(--tint);
+  border: 1px solid var(--rule);
+  border-radius: 999px;
+}
+.chips li::before { content: "✓\00a0"; color: var(--good); }
+
+.callout {
+  margin: 16px 0;
+  padding: 14px 20px;
+  background: var(--tint);
+  border-left: 3px solid var(--rule-strong);
+  border-radius: 0 4px 4px 0;
+  font-size: 17.5px;
+  line-height: 1.55;
+}
+.callout p { margin: 0; }
+.callout .tag { color: var(--faint); }
+.callout.adhd { background: var(--adhd-bg); border-left-color: var(--adhd-rule); }
+.callout.adhd .tag { color: var(--adhd-ink); }
+.callout.tip { background: var(--tip-bg); border-left-color: var(--tip-rule); }
+.callout.tip .tag { color: var(--tip-ink); }
+.callout.caution { background: var(--caution-bg); border-left-color: var(--caution-rule); }
+.callout.caution .tag { color: var(--caution-ink); }
 
 .pullquote {
   margin: 30px 0;
@@ -329,31 +505,28 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 }
 .pullquote p { margin: 0; }
 
-.callout {
-  margin: 22px 0;
-  padding: 14px 20px;
-  background: var(--tint);
-  border-left: 2px solid var(--rule-strong);
-  font-size: 17.5px;
-  line-height: 1.55;
-}
-.callout p { margin: 0; }
-.callout p > strong:first-child {
-  font-variant-caps: all-small-caps;
-  letter-spacing: 0.05em;
-  font-size: 1.06em;
-}
+.myths { list-style: none; padding: 0 !important; margin: 0 0 20px !important; }
+.myths li { position: relative; margin: 0 !important; padding: 13px 0 13px 34px !important; border-top: 1px solid var(--rule); }
+.myths li:last-child { border-bottom: 1px solid var(--rule); }
+.myths li::before { content: "✕"; position: absolute; left: 6px; top: 13px; color: var(--bad); }
+
+.avoid, .best { position: relative; padding-left: 26px; }
+.avoid::before, .best::before { position: absolute; left: 2px; }
+.avoid::before { content: "✕"; color: var(--bad); }
+.best::before { content: "✓"; color: var(--good); }
+
+/* ---------- study guide: tables, finder, timeline ---------- */
 
 .table-wrap { overflow-x: auto; margin: 18px 0 26px; }
 
-.prose table { width: 100%; border-collapse: collapse; font-size: 16.5px; line-height: 1.45; }
-.prose th, .prose td {
+.guide table { width: 100%; border-collapse: collapse; font-size: 16.5px; line-height: 1.45; }
+.guide th, .guide td {
   text-align: left;
   vertical-align: top;
   padding: 10px 16px 10px 0;
   border-bottom: 1px solid var(--rule);
 }
-.prose th {
+.guide th {
   font-weight: 400;
   font-variant-caps: all-small-caps;
   letter-spacing: 0.06em;
@@ -362,9 +535,135 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
   border-bottom-color: var(--rule-strong);
 }
 
+.schedule td:first-child { white-space: nowrap; color: var(--faint); font-variant-numeric: tabular-nums; }
+.schedule td:nth-child(2) { font-weight: 600; }
+.schedule tr.break td { background: var(--tint); }
+.schedule tr.break td:nth-child(2) { font-weight: 400; font-style: italic; }
+
+.finder {
+  margin: 8px 0 20px;
+  padding: 20px 24px 22px;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+}
+.finder .q {
+  margin: 0 0 8px;
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.07em;
+  color: var(--faint);
+  font-size: 17px;
+}
+.picks { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; }
+.pick {
+  font: inherit;
+  font-size: 16px;
+  line-height: 1.3;
+  color: var(--ink);
+  background: var(--bg);
+  border: 1px solid var(--rule-strong);
+  border-radius: 999px;
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.pick:hover { border-color: var(--ink); }
+.pick[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.answer {
+  padding: 14px 18px;
+  background: var(--tint);
+  border-radius: 4px;
+  font-size: 17.5px;
+  line-height: 1.55;
+  color: var(--muted);
+}
+.answer strong { display: block; margin-bottom: 2px; color: var(--ink); }
+.finder-tables.enhanced { display: none; }
+
+.timeline {
+  list-style: none;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  padding: 0 !important;
+  margin: 20px 0 24px !important;
+}
+.timeline li { position: relative; margin: 0 !important; padding: 26px 4px 0 !important; text-align: center; }
+.timeline li::after {
+  content: "";
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  width: 100%;
+  height: 2px;
+  background: var(--rule);
+}
+.timeline li:last-child::after { display: none; }
+.timeline li::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 1;
+  width: 14px;
+  height: 14px;
+  margin-left: -7px;
+  border-radius: 50%;
+  border: 2px solid var(--accent);
+  background: var(--bg);
+}
+.timeline li:first-child::before { background: var(--accent); }
+.timeline b { display: block; font-size: 17px; }
+.timeline span { display: block; font-size: 15px; line-height: 1.35; color: var(--faint); }
+
+/* ---------- study guide: cheat sheet ---------- */
+
+.print-cheatsheet {
+  display: none;
+  font: inherit;
+  font-size: 16px;
+  color: var(--accent);
+  background: none;
+  border: 1px solid var(--accent);
+  border-radius: 4px;
+  padding: 3px 12px;
+  cursor: pointer;
+}
+.js .print-cheatsheet { display: inline-block; }
+
+.glance {
+  list-style: none;
+  counter-reset: glance;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  padding: 0 !important;
+  margin: 10px 0 24px !important;
+}
+.glance li {
+  counter-increment: glance;
+  margin: 0 !important;
+  padding: 12px 14px !important;
+  border: 1px solid var(--rule);
+  border-radius: 6px;
+  font-size: 16px;
+  line-height: 1.4;
+}
+.glance li::before { content: counter(glance); margin-right: 6px; color: var(--accent); font-weight: 600; }
+.glance span { display: block; margin-top: 3px; color: var(--muted); }
+
+.stop-start { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 10px 0 24px; }
+.list-card { padding: 16px 20px; border: 1px solid var(--rule); border-radius: 6px; }
+.list-card.stop { border-top: 3px solid var(--bad); }
+.list-card.start { border-top: 3px solid var(--good); }
+.list-card h4 { margin: 0 0 8px; font-size: 18.5px; }
+.list-card ul { list-style: none; padding: 0 !important; margin: 0 !important; font-size: 16.5px; }
+.list-card li { position: relative; margin: 0 !important; padding: 3px 0 3px 24px !important; }
+.list-card li::before { position: absolute; left: 2px; }
+.list-card.stop li::before { content: "✕"; color: var(--bad); }
+.list-card.start li::before { content: "✓"; color: var(--good); }
+
 /* The reference list: hanging indent, no bullets. */
-.prose #references + ul { list-style: none; padding-left: 1.6em; font-size: 16.5px; line-height: 1.5; }
-.prose #references + ul li { text-indent: -1.6em; padding-left: 0; margin-bottom: 10px; }
+#references ul { list-style: none; padding-left: 1.6em; font-size: 16.5px; line-height: 1.5; }
+#references li { text-indent: -1.6em; padding-left: 0; margin-bottom: 10px; }
 
 /* ---------- footer ---------- */
 
@@ -375,19 +674,27 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 
 /* ---------- narrow screens ---------- */
 
-@media (max-width: 860px) {
+@media screen and (max-width: 860px) {
   body { font-size: 18px; }
   .wrap { padding: 0 20px; }
   .hero { padding: 56px 0 52px; }
   .lede, .subtitle { font-size: 19.5px; }
   .section { padding: 48px 0 56px; }
-  .section-grid, .guide-layout { grid-template-columns: minmax(0, 1fr); gap: 10px; }
-  .guide-head { padding: 48px 0 36px; }
-  .guide-layout { padding-top: 28px; gap: 36px; }
-  .toc { position: static; max-height: none; overflow: visible; border: 1px solid var(--rule); padding: 14px 18px; }
-  .prose > h2 { font-size: 28px; margin-top: 60px; }
+  .section-grid { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   .dialogue p { padding-left: 0; text-indent: 0; }
   .dialogue .speaker { display: block; width: auto; }
+
+  .guide-head { padding: 44px 0 28px; }
+  .guide { padding-top: 32px; }
+  .chapter-head h2 { font-size: 30px; }
+  .card { padding: 20px 20px 8px; }
+  .card .numeral { font-size: 48px; right: 16px; }
+  .technique h3 { padding-right: 40px; }
+  .card-grid, .stop-start, .glance { grid-template-columns: minmax(0, 1fr); }
+  .timeline { grid-auto-flow: row; }
+  .timeline li { padding: 0 0 14px 30px !important; text-align: left; }
+  .timeline li::before { top: 5px; left: 0; margin-left: 0; }
+  .timeline li::after { top: 12px; left: 6px; width: 2px; height: 100%; }
 }
 
 /* ---------- print ---------- */
@@ -395,19 +702,43 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 @media print {
   :root {
     --bg: #ffffff; --ink: #000000; --muted: #222222; --faint: #555555;
-    --rule: #bbbbbb; --rule-strong: #888888; --tint: #f2f2f2; --accent: #000000;
+    --rule: #bbbbbb; --rule-strong: #888888; --tint: #f2f2f2; --card: #ffffff; --accent: #000000;
   }
   body { font-size: 11pt; line-height: 1.45; }
-  .site-nav, .toc, .site-foot, .copy { display: none; }
+  .site-nav, .site-foot, .copy, .chapters, .chapter-next, .finder, .print-cheatsheet { display: none !important; }
   .wrap { max-width: none; padding: 0; }
-  .guide-head { padding: 0 0 14pt; }
-  .guide-layout { display: block; padding: 18pt 0 0; }
-  .prose { max-width: none; }
+  .guide-head { padding: 0 0 12pt; }
+  .guide { max-width: none; padding: 0; }
+  .chapter[hidden] { display: block !important; content-visibility: visible !important; }
+  .chapter + .chapter { margin-top: 24pt; padding-top: 12pt; }
+  .finder-tables.enhanced { display: block !important; }
   a { color: inherit; text-decoration: none; }
-  .prose > h2 { margin-top: 26pt; padding-top: 10pt; break-after: avoid; }
-  .prose > h3 { margin-top: 16pt; break-after: avoid; }
-  .callout, .pullquote, tr { break-inside: avoid; }
-  #the-one-page-cheat-sheet, #about-this-guide { break-before: page; border-top: 0; padding-top: 0; margin-top: 0; }
+  h2, h3 { break-after: avoid; }
+  .callout, .howto, .pullquote, .glance li, .list-card, tr { break-inside: avoid; }
+  #the-one-page-cheat-sheet, #about-this-guide { break-before: page; border-top: 0; margin-top: 0; }
+  /* Keep the cheat sheet to one page. */
+  #the-one-page-cheat-sheet .chapter-num { display: none; }
+  #the-one-page-cheat-sheet .chapter-head { margin-bottom: 4pt; }
+  #the-one-page-cheat-sheet .chapter-head h2 { font-size: 20pt; }
+  #the-one-page-cheat-sheet .chapter-head + p { font-size: 11pt; }
+  #the-one-page-cheat-sheet p { margin-bottom: 4pt; font-size: 10.5pt; }
+  #the-one-page-cheat-sheet h3 { font-size: 12.5pt; margin: 0 0 3pt; }
+  #the-one-page-cheat-sheet .topic { margin-top: 5pt; }
+  #the-one-page-cheat-sheet .timeline li { padding-top: 16px !important; }
+  .glance { gap: 5pt; margin: 4pt 0 8pt !important; }
+  .glance li { padding: 4pt 7pt !important; font-size: 9pt; line-height: 1.28; }
+  .stop-start { gap: 8pt; margin: 4pt 0 8pt; }
+  .list-card { padding: 7pt 10pt; }
+  .list-card h4 { font-size: 10.5pt; margin-bottom: 3pt; }
+  .list-card ul { font-size: 9.5pt; }
+  .list-card li { padding: 1pt 0 1pt 16pt !important; }
+  .timeline { margin: 8pt 0 8pt !important; }
+  .timeline b { font-size: 10pt; }
+  .timeline span { font-size: 8.5pt; }
+  #the-one-page-cheat-sheet .callout { margin: 6pt 0; padding: 6pt 10pt; font-size: 9.5pt; }
+  body.cheatsheet-only .guide-head,
+  body.cheatsheet-only .chapter:not(#the-one-page-cheat-sheet) { display: none !important; }
+  body.cheatsheet-only #the-one-page-cheat-sheet { break-before: auto; }
 }
 </style>
 </head>
@@ -418,40 +749,55 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
     <p class="kicker">A student’s guide</p>
     <h1>How to Actually Study</h1>
     <p class="subtitle">A practical guide for students, from high school through graduate school, built around how memory actually works.</p>
+    <p class="meta">14 techniques · 8 subjects · 5 neurodivergent profiles · a one-page cheat sheet</p>
   </div>
 </header>
 
-<div class="wrap guide-layout">
-  <nav class="toc" aria-label="Contents">
-    <p class="toc-title">Contents</p>
-    <ol>
-      <li><a href="#start-here">Start here</a></li>
-      <li><a href="#the-core-techniques">The core techniques</a></li>
-      <li><a href="#matching-techniques-to-subjects">Matching techniques to subjects</a></li>
-      <li><a href="#studying-in-multiple-formats">Studying in multiple formats</a></li>
-      <li><a href="#neurodivergent-learners">Neurodivergent learners</a></li>
-      <li><a href="#building-your-study-system">Building your study system</a></li>
-      <li><a href="#the-one-page-cheat-sheet">The one-page cheat sheet</a></li>
-      <li><a href="#about-this-guide">About this guide</a></li>
-    </ol>
-  </nav>
-  <article class="prose">
-<h2 id="start-here">Start here</h2>
+<nav class="chapters" aria-label="Chapters">
+<div class="wrap">
+<ol>
+<li><a href="#start-here">Start here</a></li>
+<li><a href="#the-core-techniques">Techniques</a></li>
+<li><a href="#matching-techniques-to-subjects">By subject</a></li>
+<li><a href="#studying-in-multiple-formats">Study formats</a></li>
+<li><a href="#neurodivergent-learners">Neurodivergent</a></li>
+<li><a href="#building-your-study-system">Study system</a></li>
+<li><a href="#the-one-page-cheat-sheet">Cheat sheet</a></li>
+<li><a href="#about-this-guide">About</a></li>
+<li class="all"><a href="#all">Whole guide</a></li>
+</ol>
+</div>
+</nav>
+
+<div class="wrap">
+<article class="guide">
+<section class="chapter" id="start-here">
+<header class="chapter-head">
+<p class="chapter-num">Chapter 1</p>
+<h2>Start here</h2>
+</header>
 <p>Most students don’t have a study <em>problem</em>. They have a study <em>method</em> problem. You sit down, you stare at the notes, you re-read the chapter — and three days later, it’s gone. That’s not a laziness issue. That’s a technique issue.</p>
 <blockquote class="pullquote"><p>The most dangerous studying myth is that time spent equals learning achieved.</p></blockquote>
 <p>The science of learning — called <strong>cognitive science</strong> — has been studying how memory actually works for decades. The gap between what works and what most students do is enormous. This guide closes that gap.</p>
-<h3 id="myths-that-waste-your-time">Myths that waste your time</h3>
-<p><strong>Myth: re-reading your notes is studying.</strong> Re-reading creates <em>familiarity</em>, not memory. You feel like you know it because it looks familiar, but you haven’t actually encoded it. A major review of study techniques rated re-reading and highlighting as low-utility: they feel productive, but they don’t reliably improve test performance (Dunlosky et al., 2013).</p>
-<p><strong>Myth: highlighting is a productive study habit.</strong> Highlighting feels active but is almost entirely passive. You’re selecting, not processing. It becomes useful only if you then do something with what you highlighted.</p>
-<p><strong>Myth: cramming the night before works.</strong> Cramming can genuinely help for a test in the morning — massed practice does load short-term memory. The catch: you forget it almost as fast, so it’s useless for the final three weeks later or the foundation you’ll need next year. For anything you need to <em>keep</em>, spacing wins decisively.</p>
-<p><strong>Myth: you need to study in one long session.</strong> Shorter, focused bursts with breaks outperform marathon sessions. Fatigue degrades encoding and attention — your brain isn’t storing what you’re “reviewing” if you’re running on empty.</p>
-<p><strong>Myth: you have a fixed “learning style” and should only study in it.</strong> This is one of the most popular ideas in education — and one of the least supported. When researchers reviewed the evidence, they found almost no well-designed studies showing that matching teaching to someone’s preferred “style” helps, and several that found it doesn’t (Pashler et al., 2008). What <em>is</em> true: some content is naturally visual (a map) or verbal (a poem), and using <em>several</em> formats strengthens memory for <em>everyone</em> — not because of your “type,” but because each format adds another route back to the memory.</p>
-<p><strong>Myth: you can study fine with your phone next to you.</strong> Every glance at a notification forces a costly mental “reload” back into the task, and a phone within reach is a constant temptation to check it. One well-known study found that even a silent, face-down phone on the desk lowered scores on working-memory tests (Ward et al., 2017); a later replication didn’t find that effect (Ruiz Pardo &amp; Minda, 2022), but the interruptions alone are reason enough. One of the simplest, highest-impact changes most students can make is putting the phone in another room.</p>
-<h3 id="the-two-things-your-brain-actually-needs">The two things your brain actually needs</h3>
+<section class="topic" id="myths-that-waste-your-time">
+<h3>Myths that waste your time</h3>
+<ul class="myths">
+<li><strong>Re-reading your notes is studying.</strong> Re-reading creates <em>familiarity</em>, not memory. You feel like you know it because it looks familiar, but you haven’t actually encoded it. A major review of study techniques rated re-reading and highlighting as low-utility: they feel productive, but they don’t reliably improve test performance (Dunlosky et al., 2013).</li>
+<li><strong>Highlighting is a productive study habit.</strong> Highlighting feels active but is almost entirely passive. You’re selecting, not processing. It becomes useful only if you then do something with what you highlighted.</li>
+<li><strong>Cramming the night before works.</strong> Cramming can genuinely help for a test in the morning — massed practice does load short-term memory. The catch: you forget it almost as fast, so it’s useless for the final three weeks later or the foundation you’ll need next year. For anything you need to <em>keep</em>, spacing wins decisively.</li>
+<li><strong>You need to study in one long session.</strong> Shorter, focused bursts with breaks outperform marathon sessions. Fatigue degrades encoding and attention — your brain isn’t storing what you’re “reviewing” if you’re running on empty.</li>
+<li><strong>You have a fixed “learning style” and should only study in it.</strong> This is one of the most popular ideas in education — and one of the least supported. When researchers reviewed the evidence, they found almost no well-designed studies showing that matching teaching to someone’s preferred “style” helps, and several that found it doesn’t (Pashler et al., 2008). What <em>is</em> true: some content is naturally visual (a map) or verbal (a poem), and using <em>several</em> formats strengthens memory for <em>everyone</em> — not because of your “type,” but because each format adds another route back to the memory.</li>
+<li><strong>You can study fine with your phone next to you.</strong> Every glance at a notification forces a costly mental “reload” back into the task, and a phone within reach is a constant temptation to check it. One well-known study found that even a silent, face-down phone on the desk lowered scores on working-memory tests (Ward et al., 2017); a later replication didn’t find that effect (Ruiz Pardo &amp; Minda, 2022), but the interruptions alone are reason enough. One of the simplest, highest-impact changes most students can make is putting the phone in another room.</li>
+</ul>
+</section>
+<section class="topic" id="the-two-things-your-brain-actually-needs">
+<h3>The two things your brain actually needs</h3>
 <p><strong>Retrieval practice.</strong> Every time you <em>pull information out</em> of your brain — rather than putting it in — you make that memory stronger and more durable. Testing yourself, even badly, beats reading perfectly.</p>
 <p><strong>Spaced repetition.</strong> Reviewing material right before you forget it forces your brain to rebuild the memory stronger. Spreading study sessions across days and weeks creates long-term retention that cramming can’t touch.</p>
 <p>Almost every effective study technique is a variation of one or both of these principles. The rest of this guide shows you how to apply them — for different subjects, different kinds of brains, and different constraints on your time.</p>
-<h3 id="how-to-use-this-guide">How to use this guide</h3>
+</section>
+<section class="topic" id="how-to-use-this-guide">
+<h3>How to use this guide</h3>
 <p>Read it straight through in about half an hour, or jump to what you need:</p>
 <ul>
 <li><strong>The core techniques</strong> — the fourteen methods, each with how to apply it.</li>
@@ -461,8 +807,11 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li><strong>Building your study system</strong> — weekly planning, a sample study day, the review calendar, and how to tell whether it’s working.</li>
 <li><strong>The one-page cheat sheet</strong> — everything that matters, on a page you can print.</li>
 </ul>
-<h3 id="quick-technique-finder">Quick technique finder</h3>
+</section>
+<section class="topic" id="quick-technique-finder">
+<h3>Quick technique finder</h3>
 <p>Not sure where to start? Find what you’re studying and how much time you have, and do both.</p>
+<div class="finder-tables" data-finder>
 <div class="table-wrap">
 <table>
 <thead>
@@ -492,57 +841,136 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 </tbody>
 </table>
 </div>
-<h2 id="the-core-techniques">The core techniques</h2>
+</div>
+</section>
+<p class="chapter-next"><a href="#the-core-techniques">Next chapter: The core techniques</a></p>
+</section>
+<section class="chapter" id="the-core-techniques">
+<header class="chapter-head">
+<p class="chapter-num">Chapter 2</p>
+<h2>The core techniques</h2>
+</header>
 <p>These aren’t tips — they’re methods. Most are strongly backed by research (a couple have lighter evidence, flagged where it matters), and each has a specific way to apply it. Learn the technique first, then adapt it to how you study.</p>
-<h3 id="1-active-recall-self-testing">1. Active recall (self-testing)</h3>
+<article class="card technique" id="1-active-recall-self-testing">
+<span class="numeral" aria-hidden="true">1</span>
+<h3>Active recall (self-testing)</h3>
 <p>The single most effective study technique for most students and most subjects. Instead of re-reading, you close the book and force yourself to retrieve the information from scratch. Every successful retrieval strengthens the memory. Every failed retrieval shows you exactly what to study.</p>
-<p><strong>How to apply it.</strong> After reading a section, close everything and write down everything you remember — like a brain dump. Then open the material and check what you missed. Alternatively: make flashcards and quiz yourself; cover your notes and recite out loud; or try answering past exam questions without looking anything up first.</p>
-<p><em>Good for:</em> vocabulary, history facts, science concepts, math formulas, literature themes.</p>
-<blockquote class="callout"><p><strong>ADHD adaptation.</strong> Keep recall sessions short — 10 minutes at most. Use index cards you can physically shuffle and flip. Apps like Anki or Quizlet with gamified streaks can harness the dopamine system. Avoid long self-testing marathons; momentum matters more than duration.</p></blockquote>
-<h3 id="2-spaced-repetition">2. Spaced repetition</h3>
+<div class="howto">
+<p class="tag">How to apply it</p>
+<p>After reading a section, close everything and write down everything you remember — like a brain dump. Then open the material and check what you missed. Alternatively: make flashcards and quiz yourself; cover your notes and recite out loud; or try answering past exam questions without looking anything up first.</p>
+</div>
+<ul class="chips" aria-label="Good for"><li>Vocabulary</li><li>History facts</li><li>Science concepts</li><li>Math formulas</li><li>Literature themes</li></ul>
+<aside class="callout adhd">
+<p class="tag">ADHD adaptation</p>
+<p>Keep recall sessions short — 10 minutes at most. Use index cards you can physically shuffle and flip. Apps like Anki or Quizlet with gamified streaks can harness the dopamine system. Avoid long self-testing marathons; momentum matters more than duration.</p>
+</aside>
+</article>
+<article class="card technique" id="2-spaced-repetition">
+<span class="numeral" aria-hidden="true">2</span>
+<h3>Spaced repetition</h3>
 <p>Reviewing information at increasing intervals exploits the “spacing effect”: memories reviewed just before they fade are rebuilt stronger each time. It’s efficient — more retention for less total study time.</p>
-<p><strong>How to apply it.</strong> Learn it on Day 1, then review it on Day 2, Day 5, Day 12, and Day 30 — then monthly until the exam. (The review calendar in <em>Building your study system</em> lays this out.) If you’re using flashcards, sort them into piles: “know it,” “shaky,” and “don’t know.” Review “don’t know” every session, “shaky” every two or three days, and “know it” weekly. Anki automates this with an algorithm.</p>
-<p><em>Good for:</em> languages, vocabulary, biology terms, historical dates, math formulas.</p>
-<blockquote class="callout"><p><strong>Tip.</strong> Pair spaced repetition with active recall and you have the most powerful learning combination known. It’s how many medical students learn thousands of terms — and it works at any level.</p></blockquote>
-<h3 id="3-the-feynman-technique">3. The Feynman technique</h3>
+<div class="howto">
+<p class="tag">How to apply it</p>
+<p>Learn it on Day 1, then review it on Day 2, Day 5, Day 12, and Day 30 — then monthly until the exam. (The review calendar in <em>Building your study system</em> lays this out.) If you’re using flashcards, sort them into piles: “know it,” “shaky,” and “don’t know.” Review “don’t know” every session, “shaky” every two or three days, and “know it” weekly. Anki automates this with an algorithm.</p>
+</div>
+<ul class="chips" aria-label="Good for"><li>Languages</li><li>Vocabulary</li><li>Biology terms</li><li>Historical dates</li><li>Math formulas</li></ul>
+<aside class="callout tip">
+<p class="tag">Tip</p>
+<p>Pair spaced repetition with active recall and you have the most powerful learning combination known. It’s how many medical students learn thousands of terms — and it works at any level.</p>
+</aside>
+</article>
+<article class="card technique" id="3-the-feynman-technique">
+<span class="numeral" aria-hidden="true">3</span>
+<h3>The Feynman technique</h3>
 <p>Named after the physicist Richard Feynman, this technique is simple and brutal: if you can’t explain something simply, you don’t actually understand it. It forces you to find the gaps in your understanding — not just the gaps in your memorization. (Researchers call the underlying skill <strong>self-explanation</strong>: explaining <em>how</em> and <em>why</em> something works, in your own words, is one of the most reliable ways to turn shaky familiarity into real understanding.)</p>
-<p><strong>How to apply it.</strong></p>
-<ol>
+<div class="howto">
+<p class="tag">How to apply it</p>
+<ol class="steps">
 <li><strong>Choose a concept.</strong> Pick one topic — photosynthesis, the causes of World War I, how quadratics work.</li>
 <li><strong>Explain it to a 10-year-old (or your notebook).</strong> Write or speak a full explanation using simple words. No jargon. If you can’t say it simply, you don’t know it yet.</li>
 <li><strong>Find where you got stuck.</strong> Any place you said “um,” used the textbook term without understanding it, or went blank — that’s what you need to study.</li>
 <li><strong>Go back and fix it.</strong> Return to your materials specifically to fill the gaps. Then try again.</li>
 </ol>
-<p><em>Good for:</em> science concepts, math proofs, historical causation, philosophy, economics.</p>
-<h3 id="4-cornell-notes">4. Cornell notes</h3>
+</div>
+<ul class="chips" aria-label="Good for"><li>Science concepts</li><li>Math proofs</li><li>Historical causation</li><li>Philosophy</li><li>Economics</li></ul>
+</article>
+<article class="card technique" id="4-cornell-notes">
+<span class="numeral" aria-hidden="true">4</span>
+<h3>Cornell notes</h3>
 <p>A structured note format whose real value is what it makes you <em>do</em>: put ideas in your own words, then test yourself on them. The layout isn’t magic — the gains come from this generative processing (reformulating and self-quizzing), not from the columns themselves. Done as mindless copying, Cornell notes help no more than any other notes.</p>
-<p><strong>How to apply it.</strong> Divide your page into three areas: a narrow <strong>cue column</strong> on the left (about 2.5 inches), a wide <strong>notes area</strong> on the right, and a <strong>summary box</strong> at the bottom (about 2 inches). During class or reading, write notes in the right column. Afterward, write questions in the left column that your notes answer. At the bottom, write a two- or three-sentence summary in your own words. To review, cover the notes and use the questions to quiz yourself.</p>
-<p><em>Good for:</em> lectures, textbooks, history, science.</p>
-<blockquote class="callout"><p><strong>ADHD adaptation.</strong> Cornell can feel rigid. Modify it: use a two-column sticky-note system instead, or go digital with Notion or OneNote, where you can add tags. The key is the question column — even if the layout is looser, adding questions to your notes transforms them.</p></blockquote>
-<h3 id="5-the-pomodoro-technique">5. The Pomodoro technique</h3>
+<div class="howto">
+<p class="tag">How to apply it</p>
+<p>Divide your page into three areas: a narrow <strong>cue column</strong> on the left (about 2.5 inches), a wide <strong>notes area</strong> on the right, and a <strong>summary box</strong> at the bottom (about 2 inches). During class or reading, write notes in the right column. Afterward, write questions in the left column that your notes answer. At the bottom, write a two- or three-sentence summary in your own words. To review, cover the notes and use the questions to quiz yourself.</p>
+</div>
+<ul class="chips" aria-label="Good for"><li>Lectures</li><li>Textbooks</li><li>History</li><li>Science</li></ul>
+<aside class="callout adhd">
+<p class="tag">ADHD adaptation</p>
+<p>Cornell can feel rigid. Modify it: use a two-column sticky-note system instead, or go digital with Notion or OneNote, where you can add tags. The key is the question column — even if the layout is looser, adding questions to your notes transforms them.</p>
+</aside>
+</article>
+<article class="card technique" id="5-the-pomodoro-technique">
+<span class="numeral" aria-hidden="true">5</span>
+<h3>The Pomodoro technique</h3>
 <p>A time-management method that breaks study into structured intervals. It works because it makes the task feel finite, forces you to protect focus time, and builds in the breaks your brain needs to consolidate what it just processed. It protects your attention; the learning itself still comes from active techniques, like recall, inside each block.</p>
-<p><strong>How to apply it.</strong> The standard version: 25 minutes of focused work, a 5-minute break, repeat four times, then a longer 20–30-minute break. During the 25 minutes, do nothing but the task — phone in another room, one tab open. After four cycles (“pomodoros”), do something genuinely restorative: walk, eat, stretch — not scroll.</p>
+<div class="howto">
+<p class="tag">How to apply it</p>
+<p>The standard version: 25 minutes of focused work, a 5-minute break, repeat four times, then a longer 20–30-minute break. During the 25 minutes, do nothing but the task — phone in another room, one tab open. After four cycles (“pomodoros”), do something genuinely restorative: walk, eat, stretch — not scroll.</p>
+</div>
 <p><strong>Works best for</strong> students who procrastinate, long writing assignments, math problem sets, and anyone who loses track of time.</p>
 <p><strong>Watch out if</strong> you hit flow states (interrupting deep focus can be counterproductive), or if you tend to use the timer as permission to put off starting.</p>
-<blockquote class="callout"><p><strong>ADHD adaptation: a modified Pomodoro.</strong> The standard 25/5 split doesn’t work for every ADHD brain. Try 10/5 (10 minutes of work, 5 of rest) to start, and build up as you succeed. The goal is starting, not duration. Also try body-doubling: work alongside someone else, in person or on a virtual co-working stream — the social context helps engage executive function.</p></blockquote>
-<h3 id="6-mind-mapping">6. Mind mapping</h3>
+<aside class="callout adhd">
+<p class="tag">ADHD adaptation: a modified Pomodoro</p>
+<p>The standard 25/5 split doesn’t work for every ADHD brain. Try 10/5 (10 minutes of work, 5 of rest) to start, and build up as you succeed. The goal is starting, not duration. Also try body-doubling: work alongside someone else, in person or on a virtual co-working stream — the social context helps engage executive function.</p>
+</aside>
+</article>
+<article class="card technique" id="6-mind-mapping">
+<span class="numeral" aria-hidden="true">6</span>
+<h3>Mind mapping</h3>
 <p>A visual technique for showing how concepts connect. Unlike linear notes, a mind map radiates out from a central idea, making relationships and structure visible at a glance. It’s best for understanding how things fit together, not for memorizing individual facts.</p>
-<p><strong>How to apply it.</strong> Write the central topic in the middle of a blank page. Draw branches out to the main subtopics. Add smaller branches for details, examples, or connections. Use color, symbols, and drawings — the more distinctive, the more memorable. Don’t just copy your notes; force yourself to reorganize them into a structure that makes sense to <em>you</em>.</p>
-<p><em>Good for:</em> essay planning, history overviews, biology systems, review summaries.</p>
-<blockquote class="callout"><p><strong>Going further.</strong> Use a different color for each branch, sketch icons instead of words, and create a master overview map at the start of each unit, updating it as you learn more. To show how ideas <em>relate</em> (not just cluster), label the lines between them — “causes,” “depends on.” A map with labeled links (a “concept map”) forces deeper thinking than a plain web.</p></blockquote>
-<blockquote class="callout"><p><strong>Caution.</strong> The evidence for mind mapping is weaker than for active recall or spacing, and it’s easy to spend an hour making something <em>beautiful</em> rather than <em>learned</em>. Keep it fast and rough, and always finish by closing the map and rebuilding it from memory — that retrieval is where the learning actually happens.</p></blockquote>
-<h3 id="7-interleaving-mixing-practice">7. Interleaving (mixing practice)</h3>
+<div class="howto">
+<p class="tag">How to apply it</p>
+<p>Write the central topic in the middle of a blank page. Draw branches out to the main subtopics. Add smaller branches for details, examples, or connections. Use color, symbols, and drawings — the more distinctive, the more memorable. Don’t just copy your notes; force yourself to reorganize them into a structure that makes sense to <em>you</em>.</p>
+</div>
+<ul class="chips" aria-label="Good for"><li>Essay planning</li><li>History overviews</li><li>Biology systems</li><li>Review summaries</li></ul>
+<aside class="callout tip">
+<p class="tag">Going further</p>
+<p>Use a different color for each branch, sketch icons instead of words, and create a master overview map at the start of each unit, updating it as you learn more. To show how ideas <em>relate</em> (not just cluster), label the lines between them — “causes,” “depends on.” A map with labeled links (a “concept map”) forces deeper thinking than a plain web.</p>
+</aside>
+<aside class="callout caution">
+<p class="tag">Caution</p>
+<p>The evidence for mind mapping is weaker than for active recall or spacing, and it’s easy to spend an hour making something <em>beautiful</em> rather than <em>learned</em>. Keep it fast and rough, and always finish by closing the map and rebuilding it from memory — that retrieval is where the learning actually happens.</p>
+</aside>
+</article>
+<article class="card technique" id="7-interleaving-mixing-practice">
+<span class="numeral" aria-hidden="true">7</span>
+<h3>Interleaving (mixing practice)</h3>
 <p>Most students study one topic at a time until they’ve mastered it (“blocked practice”). Research shows that deliberately <em>mixing</em> problem types or topics — even when it feels harder — produces better long-term retention and transfer.</p>
-<p><strong>How to apply it.</strong> Instead of doing 20 quadratic equations and then 20 factoring problems, mix them: problem 1 (quadratic), problem 2 (factoring), problem 3 (quadratic), and so on. In history, rotate between cause-and-effect questions, timeline questions, and primary-source analysis. It’ll feel harder — that’s the point. Difficulty during practice means durability in memory.</p>
-<p><em>Good for:</em> math, science problems, languages, test prep.</p>
-<blockquote class="callout"><p><strong>Common mistake.</strong> Interleaving is <em>not</em> the same as randomly bouncing between subjects every few minutes. You still need to understand the fundamentals of each topic before mixing. Think of it as practice for exam conditions, where you won’t be told which method to use.</p></blockquote>
-<h3 id="8-elaborative-interrogation-ask-why">8. Elaborative interrogation (ask “why?”)</h3>
+<div class="howto">
+<p class="tag">How to apply it</p>
+<p>Instead of doing 20 quadratic equations and then 20 factoring problems, mix them: problem 1 (quadratic), problem 2 (factoring), problem 3 (quadratic), and so on. In history, rotate between cause-and-effect questions, timeline questions, and primary-source analysis. It’ll feel harder — that’s the point. Difficulty during practice means durability in memory.</p>
+</div>
+<ul class="chips" aria-label="Good for"><li>Math</li><li>Science problems</li><li>Languages</li><li>Test prep</li></ul>
+<aside class="callout caution">
+<p class="tag">Common mistake</p>
+<p>Interleaving is <em>not</em> the same as randomly bouncing between subjects every few minutes. You still need to understand the fundamentals of each topic before mixing. Think of it as practice for exam conditions, where you won’t be told which method to use.</p>
+</aside>
+</article>
+<article class="card technique" id="8-elaborative-interrogation-ask-why">
+<span class="numeral" aria-hidden="true">8</span>
+<h3>Elaborative interrogation (ask “why?”)</h3>
 <p>A deceptively simple technique: for every fact you’re trying to learn, ask <strong>why it’s true</strong> and generate an explanation. This connects new information to things you already know, creating a richer memory network that’s far easier to retrieve.</p>
-<p><strong>How to apply it.</strong> Read a fact: “Mitosis produces two genetically identical cells.” Ask: why? (To replace cells without changing the genetic blueprint.) Why does that matter? (A skin cell replacing itself needs the same genetic instructions.) Keep asking until you’ve linked it to something you already understand. Write the chain of whys in the margin.</p>
-<p><em>Good for:</em> biology, chemistry, historical causation, economics, physics.</p>
-<h3 id="9-sq3r-active-reading">9. SQ3R (active reading)</h3>
+<div class="howto">
+<p class="tag">How to apply it</p>
+<p>Read a fact: “Mitosis produces two genetically identical cells.” Ask: why? (To replace cells without changing the genetic blueprint.) Why does that matter? (A skin cell replacing itself needs the same genetic instructions.) Keep asking until you’ve linked it to something you already understand. Write the chain of whys in the margin.</p>
+</div>
+<ul class="chips" aria-label="Good for"><li>Biology</li><li>Chemistry</li><li>Historical causation</li><li>Economics</li><li>Physics</li></ul>
+</article>
+<article class="card technique" id="9-sq3r-active-reading">
+<span class="numeral" aria-hidden="true">9</span>
+<h3>SQ3R (active reading)</h3>
 <p>SQ3R turns passive reading into an active process. Most students read textbooks start to finish without retaining much. SQ3R builds questions before you read, forcing your brain to search for answers rather than passively absorbing words.</p>
-<p><strong>How to apply it.</strong></p>
+<div class="howto">
+<p class="tag">How to apply it</p>
 <ul>
 <li><strong>Survey:</strong> skim the headings, bold terms, diagrams, and summary before reading. Get the map.</li>
 <li><strong>Question:</strong> turn each heading into a question. “Types of Chemical Bonds” becomes “What are the types of chemical bonds, and how do they differ?”</li>
@@ -550,32 +978,78 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li><strong>Recite:</strong> after each section, look away and answer your question from memory.</li>
 <li><strong>Review:</strong> at the end, summarize the whole chapter in your own words.</li>
 </ul>
-<p><em>Good for:</em> textbook reading, science chapters, history texts.</p>
-<blockquote class="callout"><p><strong>Honest caveat.</strong> As a full five-step package, SQ3R has surprisingly little direct research behind it. The steps that carry the weight are the well-proven ones: turning headings into questions and reciting from memory are forms of self-testing. If the full ritual feels like too much, just do <strong>3R — read, recite, review</strong>: read a section, look away and say it back, then check. In experiments with college students, 3R led to better recall than either re-reading or note-taking, and it took less time than taking notes (McDaniel, Howard &amp; Einstein, 2009).</p></blockquote>
-<h3 id="10-the-blurt-brain-dump">10. The Blurt (brain dump)</h3>
+</div>
+<ul class="chips" aria-label="Good for"><li>Textbook reading</li><li>Science chapters</li><li>History texts</li></ul>
+<aside class="callout caution">
+<p class="tag">Honest caveat</p>
+<p>As a full five-step package, SQ3R has surprisingly little direct research behind it. The steps that carry the weight are the well-proven ones: turning headings into questions and reciting from memory are forms of self-testing. If the full ritual feels like too much, just do <strong>3R — read, recite, review</strong>: read a section, look away and say it back, then check. In experiments with college students, 3R led to better recall than either re-reading or note-taking, and it took less time than taking notes (McDaniel, Howard &amp; Einstein, 2009).</p>
+</aside>
+</article>
+<article class="card technique" id="10-the-blurt-brain-dump">
+<span class="numeral" aria-hidden="true">10</span>
+<h3>The Blurt (brain dump)</h3>
 <p>The simplest active recall technique there is. Take a blank piece of paper, write the topic at the top, and then write down everything you know about it — without looking at anything. Everything. Then check what you missed and study only those gaps.</p>
-<p><strong>How to apply it.</strong> Before a test, blurt everything you know about “The French Revolution” or “Chapter 5: Cell Division.” What comes out easily is consolidated. What you struggle with or forget completely is exactly what needs work. Repeat after filling the gaps until the page is full. This works as a self-diagnostic as much as a learning technique.</p>
-<p><em>Good for:</em> pre-test review, any subject, quick check-ins.</p>
-<blockquote class="callout"><p><strong>ADHD adaptation.</strong> The Blurt is perfect for ADHD — it’s open-ended, time-limited, and produces something tangible. Set a timer for 5–7 minutes. Speak it out loud instead of writing if that’s easier, and record a voice note. Movement version: pace while you blurt out loud.</p></blockquote>
-<h3 id="11-dual-coding-words-and-visuals">11. Dual coding (words and visuals)</h3>
+<div class="howto">
+<p class="tag">How to apply it</p>
+<p>Before a test, blurt everything you know about “The French Revolution” or “Chapter 5: Cell Division.” What comes out easily is consolidated. What you struggle with or forget completely is exactly what needs work. Repeat after filling the gaps until the page is full. This works as a self-diagnostic as much as a learning technique.</p>
+</div>
+<ul class="chips" aria-label="Good for"><li>Pre-test review</li><li>Any subject</li><li>Quick check-ins</li></ul>
+<aside class="callout adhd">
+<p class="tag">ADHD adaptation</p>
+<p>The Blurt is perfect for ADHD — it’s open-ended, time-limited, and produces something tangible. Set a timer for 5–7 minutes. Speak it out loud instead of writing if that’s easier, and record a voice note. Movement version: pace while you blurt out loud.</p>
+</aside>
+</article>
+<article class="card technique" id="11-dual-coding-words-and-visuals">
+<span class="numeral" aria-hidden="true">11</span>
+<h3>Dual coding (words and visuals)</h3>
 <p>Pair what you’re learning with a relevant picture: a diagram, sketch, timeline, flowchart, or quick doodle. Storing an idea as <em>both</em> words and an image gives your memory two independent routes back to it — so if one fails on test day, the other can still fire. This is the real, evidence-based reason visual study tools work, and it helps every student, not a “type.”</p>
-<p><strong>How to apply it.</strong> As you take notes, add a small drawing or diagram beside key ideas — keep it rough; meaning beats art. Turn a process into a flowchart, a comparison into a table, a trend into a sketched graph. Then cover the words and explain the picture; cover the picture and redraw it from the words. Don’t just decorate — the image has to carry real meaning.</p>
-<p><em>Good for:</em> biology processes, history timelines, physics and chemistry, geography, vocabulary.</p>
-<h3 id="12-pretesting-guess-before-you-learn">12. Pretesting (guess before you learn)</h3>
+<div class="howto">
+<p class="tag">How to apply it</p>
+<p>As you take notes, add a small drawing or diagram beside key ideas — keep it rough; meaning beats art. Turn a process into a flowchart, a comparison into a table, a trend into a sketched graph. Then cover the words and explain the picture; cover the picture and redraw it from the words. Don’t just decorate — the image has to carry real meaning.</p>
+</div>
+<ul class="chips" aria-label="Good for"><li>Biology processes</li><li>History timelines</li><li>Physics and chemistry</li><li>Geography</li><li>Vocabulary</li></ul>
+</article>
+<article class="card technique" id="12-pretesting-guess-before-you-learn">
+<span class="numeral" aria-hidden="true">12</span>
+<h3>Pretesting (guess before you learn)</h3>
 <p>Try to answer questions on a topic <em>before</em> you’ve studied it — and don’t worry about getting them wrong. The act of guessing, then seeing the right answer, makes that answer far stickier than reading it cold. Being wrong first actually primes your brain to grab the correct information when it arrives.</p>
-<p><strong>How to apply it.</strong> Before reading a new chapter, attempt the end-of-chapter questions, or turn each heading into a question and take a guess. Then check your answers as you read. It feels uncomfortable to attempt things you “haven’t learned yet” — that discomfort is the technique working.</p>
-<p><em>Good for:</em> new topics, textbook chapters, science and math, any subject with practice questions.</p>
-<h3 id="13-concrete-examples">13. Concrete examples</h3>
+<div class="howto">
+<p class="tag">How to apply it</p>
+<p>Before reading a new chapter, attempt the end-of-chapter questions, or turn each heading into a question and take a guess. Then check your answers as you read. It feels uncomfortable to attempt things you “haven’t learned yet” — that discomfort is the technique working.</p>
+</div>
+<ul class="chips" aria-label="Good for"><li>New topics</li><li>Textbook chapters</li><li>Science and math</li><li>Any subject with practice questions</li></ul>
+</article>
+<article class="card technique" id="13-concrete-examples">
+<span class="numeral" aria-hidden="true">13</span>
+<h3>Concrete examples</h3>
 <p>Abstract ideas are slippery; examples give them something to stick to. When you’re learning a concept, collect two or three concrete, real examples of it — ideally from <em>different</em> contexts, so your brain latches onto the underlying idea rather than the surface details of a single case.</p>
-<p><strong>How to apply it.</strong> For each concept, write down a couple of specific examples in your own words — then try to invent one yourself that wasn’t in the book (that’s the real test of understanding). It works in reverse too: gather several examples and figure out the principle that connects them. Vary the examples so you don’t tie the idea to one situation.</p>
-<p><em>Good for:</em> abstract concepts, economics, physics, definitions, essay arguments.</p>
-<h3 id="14-self-explanation">14. Self-explanation</h3>
+<div class="howto">
+<p class="tag">How to apply it</p>
+<p>For each concept, write down a couple of specific examples in your own words — then try to invent one yourself that wasn’t in the book (that’s the real test of understanding). It works in reverse too: gather several examples and figure out the principle that connects them. Vary the examples so you don’t tie the idea to one situation.</p>
+</div>
+<ul class="chips" aria-label="Good for"><li>Abstract concepts</li><li>Economics</li><li>Physics</li><li>Definitions</li><li>Essay arguments</li></ul>
+</article>
+<article class="card technique" id="14-self-explanation">
+<span class="numeral" aria-hidden="true">14</span>
+<h3>Self-explanation</h3>
 <p>The close cousin of the Feynman technique — but aimed at <em>process</em> rather than a whole topic. As you work through a solved problem or a passage, pause at each step and explain to yourself <strong>why this step, and why now</strong>. It turns silent reading or copying into active sense-making, and it surfaces the steps you were secretly taking on faith.</p>
-<p><strong>How to apply it.</strong> Work through a worked example one line at a time. At each line, ask: “Why is this step here? What rule makes it valid? How does it follow from the line before?” Say or write the answer. When reading, after each paragraph explain how it connects to what came before. Anywhere you can’t explain the “why” is a gap to go fix.</p>
-<p><em>Good for:</em> math worked examples, physics and chemistry, computer science, dense readings.</p>
-<h2 id="matching-techniques-to-subjects">Matching techniques to subjects</h2>
+<div class="howto">
+<p class="tag">How to apply it</p>
+<p>Work through a worked example one line at a time. At each line, ask: “Why is this step here? What rule makes it valid? How does it follow from the line before?” Say or write the answer. When reading, after each paragraph explain how it connects to what came before. Anywhere you can’t explain the “why” is a gap to go fix.</p>
+</div>
+<ul class="chips" aria-label="Good for"><li>Math worked examples</li><li>Physics and chemistry</li><li>Computer science</li><li>Dense readings</li></ul>
+</article>
+<p class="chapter-next"><a href="#matching-techniques-to-subjects">Next chapter: Matching techniques to subjects</a></p>
+</section>
+<section class="chapter" id="matching-techniques-to-subjects">
+<header class="chapter-head">
+<p class="chapter-num">Chapter 3</p>
+<h2>Matching techniques to subjects</h2>
+</header>
 <p>Different subjects put different demands on your brain. Math is not English is not chemistry. Here’s how to use techniques strategically — and why some methods that work brilliantly for one subject fail for another.</p>
-<h3 id="mathematics">Mathematics</h3>
+<div class="card-grid">
+<article class="card" id="mathematics">
+<h3>Mathematics</h3>
 <ul>
 <li>Practice problems — always</li>
 <li>Interleaving (mix problem types)</li>
@@ -583,8 +1057,10 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li>The Feynman technique for proofs</li>
 <li>An error log: redo every problem you got wrong</li>
 </ul>
-<p><strong>Avoid</strong> flashcards and re-reading notes. Math is learned by doing, not watching.</p>
-<h3 id="sciences">Sciences</h3>
+<p class="avoid"><strong>Avoid</strong> flashcards and re-reading notes. Math is learned by doing, not watching.</p>
+</article>
+<article class="card" id="sciences">
+<h3>Sciences</h3>
 <ul>
 <li>Diagrams, with labeled redrawing from memory</li>
 <li>Active recall on terminology (flashcards)</li>
@@ -592,8 +1068,10 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li>Worked past-paper questions</li>
 <li>Concept mapping to link systems</li>
 </ul>
-<p><strong>Best combination:</strong> Cornell notes, active recall, and a mind map for the overview.</p>
-<h3 id="history">History</h3>
+<p class="best"><strong>Best combination:</strong> Cornell notes, active recall, and a mind map for the overview.</p>
+</article>
+<article class="card" id="history">
+<h3>History</h3>
 <ul>
 <li>Timelines (visual and sequential)</li>
 <li>Cause-and-effect webs (a mind-map variant)</li>
@@ -601,8 +1079,10 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li>Practice essays, written without notes</li>
 <li>Perspective cards: “who believed what, and why?”</li>
 </ul>
-<p><strong>Best combination:</strong> Cornell notes for reading, the Blurt for review, then practice essays.</p>
-<h3 id="english-and-literature">English and literature</h3>
+<p class="best"><strong>Best combination:</strong> Cornell notes for reading, the Blurt for review, then practice essays.</p>
+</article>
+<article class="card" id="english-and-literature">
+<h3>English and literature</h3>
 <ul>
 <li>Quote banks (active recall of key quotes)</li>
 <li>Character and theme diagrams</li>
@@ -610,8 +1090,10 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li>Reading aloud for rhythm and voice</li>
 <li>Argument mapping: thesis, evidence, analysis</li>
 </ul>
-<p><strong>Avoid</strong> re-reading the text passively. Analyze as you read.</p>
-<h3 id="foreign-languages">Foreign languages</h3>
+<p class="avoid"><strong>Avoid</strong> re-reading the text passively. Analyze as you read.</p>
+</article>
+<article class="card" id="foreign-languages">
+<h3>Foreign languages</h3>
 <ul>
 <li>Spaced repetition for vocabulary (Anki is ideal)</li>
 <li>Shadowing: listen and repeat aloud</li>
@@ -619,8 +1101,10 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li>Writing sentences with new vocabulary (context beats isolation)</li>
 <li>Music and podcasts in the target language</li>
 </ul>
-<p><strong>Best combination:</strong> Anki daily, plus writing and speaking aloud.</p>
-<h3 id="computer-science">Computer science</h3>
+<p class="best"><strong>Best combination:</strong> Anki daily, plus writing and speaking aloud.</p>
+</article>
+<article class="card" id="computer-science">
+<h3>Computer science</h3>
 <ul>
 <li>Code from scratch (no copy-paste learning)</li>
 <li>Rubber-duck debugging (explain your code to an object)</li>
@@ -628,24 +1112,31 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li>The Feynman technique for algorithms</li>
 <li>Active recall of syntax and concepts</li>
 </ul>
-<p><strong>Avoid</strong> watching tutorials without coding alongside. Passive watching creates false familiarity.</p>
-<h3 id="geography-and-social-studies">Geography and social studies</h3>
+<p class="avoid"><strong>Avoid</strong> watching tutorials without coding alongside. Passive watching creates false familiarity.</p>
+</article>
+<article class="card" id="geography-and-social-studies">
+<h3>Geography and social studies</h3>
 <ul>
 <li>Map labeling (draw and label from memory)</li>
 <li>Case-study cards: location, facts, significance</li>
 <li>Cause-and-effect diagrams</li>
 <li>Data and statistics recall cards</li>
 </ul>
-<p><strong>Best combination:</strong> visual maps plus case-study active recall.</p>
-<h3 id="music-and-the-arts">Music and the arts</h3>
+<p class="best"><strong>Best combination:</strong> visual maps plus case-study active recall.</p>
+</article>
+<article class="card" id="music-and-the-arts">
+<h3>Music and the arts</h3>
 <ul>
 <li>Spaced practice (30 minutes daily beats three hours on the weekend)</li>
 <li>Record yourself, then listen critically</li>
 <li>Active recall for theory terms</li>
 <li>Break pieces into sections and master each one</li>
 </ul>
-<p><strong>Consistency beats duration.</strong> Daily practice builds motor and auditory memory.</p>
-<h3 id="when-a-technique-isnt-working-switch-it-up">When a technique isn’t working, switch it up</h3>
+<p class="best"><strong>Consistency beats duration.</strong> Daily practice builds motor and auditory memory.</p>
+</article>
+</div>
+<section class="topic" id="when-a-technique-isnt-working-switch-it-up">
+<h3>When a technique isn’t working, switch it up</h3>
 <p>Not every technique suits every student, even in the same subject. Here’s a quick swap guide.</p>
 <p><strong>If flashcards aren’t sticking:</strong></p>
 <ul>
@@ -672,10 +1163,21 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li>Try prompt-based recall: cover everything except a single keyword</li>
 <li>Do a Blurt with a friend — talking makes retrieval feel less high-stakes</li>
 </ul>
-<h2 id="studying-in-multiple-formats">Studying in multiple formats</h2>
+</section>
+<p class="chapter-next"><a href="#studying-in-multiple-formats">Next chapter: Studying in multiple formats</a></p>
+</section>
+<section class="chapter" id="studying-in-multiple-formats">
+<header class="chapter-head">
+<p class="chapter-num">Chapter 4</p>
+<h2>Studying in multiple formats</h2>
+</header>
 <p>You’ll often hear people call themselves a “visual learner” or an “auditory learner.” It’s a comfortable idea — but matching study to a fixed personal “style” hasn’t held up when researchers tested it (Pashler et al., 2008). Two things <em>are</em> true and useful. First, some material suits a particular format — a map wants to be seen, a poem wants to be heard. Second, encoding the same idea in <em>several</em> formats builds stronger, more retrievable memories for <strong>everyone</strong>. So treat the sections below not as “your type,” but as a toolbox: match the tool to the <em>content</em>, and stack a few formats together for anything important.</p>
-<blockquote class="callout"><p><strong>The honest truth.</strong> A format preference is fine as a way to <em>get started</em> — if diagrams pull you in, start there. Just don’t stop there. The student who draws a concept <em>and</em> says it aloud <em>and</em> writes an example will out-remember the one who only draws. Preference affects motivation; multi-format encoding affects memory. Use the first to start and the second to learn.</p></blockquote>
-<h3 id="visual-formats">Visual formats</h3>
+<aside class="callout tip">
+<p class="tag">The honest truth</p>
+<p>A format preference is fine as a way to <em>get started</em> — if diagrams pull you in, start there. Just don’t stop there. The student who draws a concept <em>and</em> says it aloud <em>and</em> writes an example will out-remember the one who only draws. Preference affects motivation; multi-format encoding affects memory. Use the first to start and the second to learn.</p>
+</aside>
+<article class="card" id="visual-formats">
+<h3>Visual formats</h3>
 <p><em>Best for content with structure, relationships, or a sequence you can see.</em></p>
 <p>Reach for these when the material is spatial or graphical — processes, hierarchies, comparisons, anything where <em>seeing</em> the relationships makes them click. They’re useful to everyone, especially as the visual half of dual coding.</p>
 <ul>
@@ -688,7 +1190,9 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li><strong>Cover-and-redraw</strong> — study a diagram, then reproduce it from memory</li>
 </ul>
 <p><strong>Setting:</strong> a clean, visually uncluttered space. Whiteboards are ideal; standing and writing large gives you room to lay the ideas out.</p>
-<h3 id="auditory-formats">Auditory formats</h3>
+</article>
+<article class="card" id="auditory-formats">
+<h3>Auditory formats</h3>
 <p><em>Best for language, argument, and anything that lives in sound or speech.</em></p>
 <p>Reach for these when you can put the material into sound — explaining out loud, discussing, or hearing it. Speaking an idea also doubles as active recall, which is why “teach it aloud” is so powerful for anyone.</p>
 <ul>
@@ -701,7 +1205,9 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li><strong>The Feynman technique, spoken aloud</strong> — explaining verbally is especially powerful</li>
 </ul>
 <p><strong>Setting:</strong> some people concentrate better with background music or ambient sound than in silence. If you use music, keep it instrumental during intensive work.</p>
-<h3 id="hands-on-formats">Hands-on formats</h3>
+</article>
+<article class="card" id="hands-on-formats">
+<h3>Hands-on formats</h3>
 <p><em>Best for procedures, skills, and abstract ideas that need to be made concrete.</em></p>
 <p>Reach for these when sitting and reading isn’t sticking, or when the material is a procedure or a skill. Acting things out, building models, and moving while you review can boost focus and motivation — and turning an abstract idea into something physical makes it concrete.</p>
 <ul>
@@ -715,7 +1221,9 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li><strong>Cook, build, or create to learn</strong> — apply chemistry to cooking, physics to sports mechanics</li>
 </ul>
 <p><strong>Setting:</strong> don’t fight the urge to move. A standing desk, pacing, or changing locations can all help if sitting still for hours drains your focus.</p>
-<h3 id="text-based-formats">Text-based formats</h3>
+</article>
+<article class="card" id="text-based-formats">
+<h3>Text-based formats</h3>
 <p><em>Best for definitions, detailed arguments, and anything you’ll be assessed on in writing.</em></p>
 <p>Reach for these when precise wording matters, or when the exam itself is written. The trap with text methods is that copying feels productive — so make writing <em>generative</em>: reformulate in your own words and test yourself from it, rather than transcribing.</p>
 <ul>
@@ -727,13 +1235,29 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li><strong>Practice essays with strict time limits</strong> — writing under pressure is its own skill</li>
 </ul>
 <p><strong>Pitfall:</strong> the urge to make perfect, clean notes can turn into procrastination. Making notes is not studying. Reviewing and testing yourself from your notes is studying.</p>
-<h3 id="stacking-formats-for-stronger-memory">Stacking formats for stronger memory</h3>
+</article>
+<section class="topic" id="stacking-formats-for-stronger-memory">
+<h3>Stacking formats for stronger memory</h3>
 <p>This is the part that’s backed by strong evidence: the most resilient memories are encoded in more than one format. Whatever you reach for first, adding another — say it aloud, sketch it, write an example, act it out — creates more retrieval pathways, so you can reach the memory from more angles on test day.</p>
-<blockquote class="callout"><p><strong>The multi-encoding stack.</strong> For any important concept: <strong>draw it</strong>, then <strong>say it out loud</strong>, then <strong>write an example</strong>, then <strong>teach it to someone</strong>. Four encodings, four routes back to the memory. One will work when you need it.</p></blockquote>
-<h2 id="neurodivergent-learners">Neurodivergent learners</h2>
+<aside class="callout tip">
+<p class="tag">The multi-encoding stack</p>
+<p>For any important concept: <strong>draw it</strong>, then <strong>say it out loud</strong>, then <strong>write an example</strong>, then <strong>teach it to someone</strong>. Four encodings, four routes back to the memory. One will work when you need it.</p>
+</aside>
+</section>
+<p class="chapter-next"><a href="#neurodivergent-learners">Next chapter: Neurodivergent learners</a></p>
+</section>
+<section class="chapter" id="neurodivergent-learners">
+<header class="chapter-head">
+<p class="chapter-num">Chapter 5</p>
+<h2>Neurodivergent learners</h2>
+</header>
 <p>Standard study advice is written for a mythical average student. If your brain works differently — whether because of ADHD, dyslexia, anxiety, autism, or another profile — much of that advice will feel either impossible or actively counterproductive. This section gives honest, specific modifications that work with your neurology, not against it.</p>
-<blockquote class="callout"><p><strong>A word before you start.</strong> None of these profiles is a monolith. ADHD looks wildly different from one student to the next; autism presents differently in different people. Use the relevant section as a starting menu of ideas to experiment with — not as a prescription. You’re the expert on your own brain.</p></blockquote>
-<h3 id="adhd-studying-with-an-interest-based-nervous-system">ADHD: studying with an interest-based nervous system</h3>
+<aside class="callout note">
+<p class="tag">A word before you start</p>
+<p>None of these profiles is a monolith. ADHD looks wildly different from one student to the next; autism presents differently in different people. Use the relevant section as a starting menu of ideas to experiment with — not as a prescription. You’re the expert on your own brain.</p>
+</aside>
+<article class="card" id="adhd-studying-with-an-interest-based-nervous-system">
+<h3>ADHD<span class="h3-sub">Studying with an interest-based nervous system</span></h3>
 <p>ADHD brains don’t regulate attention on command — they regulate it through <strong>interest, urgency, challenge, and novelty</strong>. So “just try harder to focus” isn’t a technique; it’s not how the underlying system works. The goal is to engineer conditions that naturally engage ADHD attention.</p>
 <ul>
 <li><strong>Gamify everything you can.</strong> Anki streaks, Quizlet flashcard races, timed challenges, bets with yourself. The artificial urgency of a timer engages ADHD attention in a way that “I should study this” does not.</li>
@@ -745,8 +1269,10 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li><strong>Work with hyperfocus, not against it.</strong> If you lock onto a topic unexpectedly, ride it — don’t switch away because it’s not next on the schedule. Hyperfocus is a superpower when it’s aimed at relevant material.</li>
 <li><strong>Reduce visual clutter.</strong> One notebook, one pen, phone in another room. Every extra object is a potential distraction.</li>
 </ul>
-<p><strong>Avoid or modify:</strong> long uninterrupted study sessions; passive re-reading; studying with social media open; self-criticism for struggling to start (difficulty starting tasks is neurological, not a character flaw).</p>
-<h3 id="dyslexia-building-on-strengths-in-reasoning-and-creativity">Dyslexia: building on strengths in reasoning and creativity</h3>
+<p class="avoid"><strong>Avoid or modify:</strong> long uninterrupted study sessions; passive re-reading; studying with social media open; self-criticism for struggling to start (difficulty starting tasks is neurological, not a character flaw).</p>
+</article>
+<article class="card" id="dyslexia-building-on-strengths-in-reasoning-and-creativity">
+<h3>Dyslexia<span class="h3-sub">Building on strengths in reasoning and creativity</span></h3>
 <p>Dyslexia affects reading speed and decoding, not intelligence or reasoning ability. Many dyslexic students are strong conceptual thinkers who are held back by text-heavy study methods — the answer is to reduce the decoding load while keeping the thinking demanding.</p>
 <ul>
 <li><strong>Text-to-speech tools.</strong> Read&amp;Write, NaturalReader, or your computer’s built-in reader can read textbooks, notes, and web pages aloud. Use it actively, not as a crutch — listen, engage, and take your own notes as you go.</li>
@@ -757,8 +1283,10 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li><strong>Chunk your reading.</strong> Read one paragraph at a time with a specific question in mind. Don’t try to absorb large blocks at once.</li>
 <li><strong>Extra time is not an advantage — it’s equity.</strong> If you’re entitled to extended time on exams, use it strategically. Practice under normal conditions too, so it’s a safety net, not a dependency.</li>
 </ul>
-<p><strong>Avoid or modify:</strong> handwritten note-taking without an audio backup; timed reading exercises that create anxiety; expecting the same reading speed as non-dyslexic classmates.</p>
-<h3 id="academic-anxiety-reducing-threat-building-confidence">Academic anxiety: reducing threat, building confidence</h3>
+<p class="avoid"><strong>Avoid or modify:</strong> handwritten note-taking without an audio backup; timed reading exercises that create anxiety; expecting the same reading speed as non-dyslexic classmates.</p>
+</article>
+<article class="card" id="academic-anxiety-reducing-threat-building-confidence">
+<h3>Academic anxiety<span class="h3-sub">Reducing threat, building confidence</span></h3>
 <p>Anxiety activates the body’s threat response, which impairs the prefrontal cortex — the part of the brain that handles working memory and focus. Studying under high anxiety is inefficient, so the study environment itself is part of the fix.</p>
 <ul>
 <li><strong>Low-stakes recall first.</strong> Start sessions with material you already know well — warm up retrieval before challenging yourself. Starting with failure can trigger a spiral.</li>
@@ -768,8 +1296,10 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li><strong>Small sessions, lots of wins.</strong> Anxiety feeds on helplessness and overwhelm. Micro-sessions with achievable goals (“learn 10 vocabulary words today”) build confidence faster than marathon sessions that end in burnout.</li>
 <li><strong>Focus on process, not outcome.</strong> “I will spend 25 minutes on this,” not “I need to know this perfectly.” Process goals are achievable; outcome goals create anxiety.</li>
 </ul>
-<p><strong>Avoid:</strong> studying in a space you associate with anxiety or failure; checking practice-test scores over and over mid-session; comparing notes with classmates right before an exam.</p>
-<h3 id="autism-leveraging-depth-managing-overload">Autism: leveraging depth, managing overload</h3>
+<p class="avoid"><strong>Avoid:</strong> studying in a space you associate with anxiety or failure; checking practice-test scores over and over mid-session; comparing notes with classmates right before an exam.</p>
+</article>
+<article class="card" id="autism-leveraging-depth-managing-overload">
+<h3>Autism<span class="h3-sub">Leveraging depth, managing overload</span></h3>
 <p>Autistic students often have extraordinary depth of focus in areas of interest, strong systemizing skills, and excellent pattern recognition — but may find context-switching, implicit instructions, and the sensory side of study environments harder.</p>
 <ul>
 <li><strong>Use special interests as bridges.</strong> Connect course content to an area of deep interest wherever you can. Motivation and retention in a topic of intense interest can be exceptional — use them.</li>
@@ -780,7 +1310,9 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li><strong>Transition warnings between tasks.</strong> Build explicit transition rituals: a five-minute warning timer, closing the notebook, standing up, a two-minute movement break. Abrupt switches between topics are harder; plan them.</li>
 <li><strong>Routine-based scheduling.</strong> Studying at the same times in the same places isn’t rigidity — it’s an efficient strategy. The environmental cues reduce executive-function overhead.</li>
 </ul>
-<h3 id="dyscalculia-working-with-number-processing-differences">Dyscalculia: working with number-processing differences</h3>
+</article>
+<article class="card" id="dyscalculia-working-with-number-processing-differences">
+<h3>Dyscalculia<span class="h3-sub">Working with number-processing differences</span></h3>
 <p>Dyscalculia affects numerical processing and spatial-mathematical reasoning, not general intelligence. Students with dyscalculia often have strong verbal and creative abilities that can be put to work.</p>
 <ul>
 <li><strong>Say math procedures out loud.</strong> Narrate each step as you work through a problem. The verbal encoding compensates for weaker numerical encoding.</li>
@@ -789,14 +1321,32 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li><strong>Calculators for computation, not understanding.</strong> Use tools that lighten the calculation load, so your effort goes to the concepts.</li>
 <li><strong>Anchor numbers to real situations.</strong> Abstract numbers are harder to process; tie them to concrete scenarios that mean something to you.</li>
 </ul>
-<h2 id="building-your-study-system">Building your study system</h2>
+</article>
+<p class="chapter-next"><a href="#building-your-study-system">Next chapter: Building your study system</a></p>
+</section>
+<section class="chapter" id="building-your-study-system">
+<header class="chapter-head">
+<p class="chapter-num">Chapter 6</p>
+<h2>Building your study system</h2>
+</header>
 <p>Knowing techniques is useless without a system that puts them into practice. A study system answers three questions: <em>what</em> do I study, <em>when</em> do I study it, and <em>how</em> do I know it’s working?</p>
-<h3 id="step-1-weekly-planning">Step 1: Weekly planning</h3>
+<section class="topic" id="step-1-weekly-planning">
+<p class="step-label">Step 1</p>
+<h3>Weekly planning</h3>
 <p>At the start of each week, identify exactly what needs to be done. Not “study for biology” — specifics like “complete active recall cards for Chapter 6” or “write three practice essay paragraphs on the causes of World War II.” Vague goals create decision fatigue and procrastination.</p>
-<blockquote class="callout"><p><strong>The three-category weekly list.</strong> Divide your list into <strong>Must do</strong> (assessed material, upcoming tests), <strong>Should do</strong> (review to consolidate), and <strong>Want to do</strong> (deeper exploration). Start every session with Must do. Never start with Want to do.</p></blockquote>
-<blockquote class="callout"><p><strong>Turn plans into if–then triggers.</strong> A vague intention (“I’ll review biology this week”) is easy to skip. Tie each task to a specific time and place instead: <strong>“If it’s 4 p.m. on Tuesday, then I’ll do 10 Anki cards at my desk.”</strong> These if–then plans — researchers call them <em>implementation intentions</em> — reliably boost follow-through, because the moment itself becomes the cue and you don’t have to decide all over again.</p></blockquote>
-<h3 id="step-2-a-sample-study-day">Step 2: A sample study day</h3>
-<div class="table-wrap">
+<aside class="callout tip">
+<p class="tag">The three-category weekly list</p>
+<p>Divide your list into <strong>Must do</strong> (assessed material, upcoming tests), <strong>Should do</strong> (review to consolidate), and <strong>Want to do</strong> (deeper exploration). Start every session with Must do. Never start with Want to do.</p>
+</aside>
+<aside class="callout tip">
+<p class="tag">Turn plans into if–then triggers</p>
+<p>A vague intention (“I’ll review biology this week”) is easy to skip. Tie each task to a specific time and place instead: <strong>“If it’s 4 p.m. on Tuesday, then I’ll do 10 Anki cards at my desk.”</strong> These if–then plans — researchers call them <em>implementation intentions</em> — reliably boost follow-through, because the moment itself becomes the cue and you don’t have to decide all over again.</p>
+</aside>
+</section>
+<section class="topic" id="step-2-a-sample-study-day">
+<p class="step-label">Step 2</p>
+<h3>A sample study day</h3>
+<div class="table-wrap schedule">
 <table>
 <thead>
 <tr><th>Time</th><th>Block</th><th>What to do</th></tr>
@@ -804,37 +1354,42 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <tbody>
 <tr><td>4:00–4:10</td><td>Review yesterday</td><td>A quick Blurt or flashcard run on what you covered yesterday — spaced repetition in action.</td></tr>
 <tr><td>4:10–4:35</td><td>Deep focus 1</td><td>The first Pomodoro, on your priority subject. Active study only: no re-reading, only doing.</td></tr>
-<tr><td>4:35–4:40</td><td>Break</td><td>A genuine break. Stand up, eat something, stretch. No screens.</td></tr>
+<tr class="break"><td>4:35–4:40</td><td>Break</td><td>A genuine break. Stand up, eat something, stretch. No screens.</td></tr>
 <tr><td>4:40–5:05</td><td>Deep focus 2</td><td>The second Pomodoro — the same subject or the next priority. Switch if your focus has gone.</td></tr>
-<tr><td>5:05–5:20</td><td>Long break</td><td>After two Pomodoros, take a proper 15-minute break. Walk if you can.</td></tr>
+<tr class="break"><td>5:05–5:20</td><td>Long break</td><td>After two Pomodoros, take a proper 15-minute break. Walk if you can.</td></tr>
 <tr><td>5:20–5:45</td><td>Deep focus 3</td><td>The third Pomodoro — ideally a different subject, for interleaving across the week.</td></tr>
 <tr><td>5:45–6:00</td><td>Review and plan</td><td>What did I actually learn today? What do I still need to review? Set tomorrow’s priority.</td></tr>
 </tbody>
 </table>
 </div>
-<blockquote class="callout"><p><strong>ADHD version.</strong> Compress each Pomodoro to 15 minutes, and add a physical-activity break (not a screen break) between every block. Plan one specific micro-task per block, written out before you start. Use a visual timer you can see counting down — invisible timers don’t work as well for ADHD brains.</p></blockquote>
-<h3 id="step-3-the-review-calendar">Step 3: The review calendar</h3>
+<aside class="callout adhd">
+<p class="tag">ADHD version</p>
+<p>Compress each Pomodoro to 15 minutes, and add a physical-activity break (not a screen break) between every block. Plan one specific micro-task per block, written out before you start. Use a visual timer you can see counting down — invisible timers don’t work as well for ADHD brains.</p>
+</aside>
+</section>
+<section class="topic" id="step-3-the-review-calendar">
+<p class="step-label">Step 3</p>
+<h3>The review calendar</h3>
 <p>For material you genuinely need to retain (not just survive the next quiz), plan your reviews in advance.</p>
-<div class="table-wrap">
-<table>
-<thead>
-<tr><th>Day</th><th>What to do</th></tr>
-</thead>
-<tbody>
-<tr><td>Day 1</td><td>Learn it</td></tr>
-<tr><td>Day 2</td><td>Review (active recall)</td></tr>
-<tr><td>Day 5</td><td>Review again</td></tr>
-<tr><td>Day 12</td><td>Review</td></tr>
-<tr><td>Day 30</td><td>Review</td></tr>
-<tr><td>After that</td><td>Monthly until the exam</td></tr>
-</tbody>
-</table>
-</div>
+<ol class="timeline">
+<li><b>Day 1</b><span>Learn it</span></li>
+<li><b>Day 2</b><span>Review (active recall)</span></li>
+<li><b>Day 5</b><span>Review again</span></li>
+<li><b>Day 12</b><span>Review</span></li>
+<li><b>Day 30</b><span>Review</span></li>
+<li><b>After that</b><span>Monthly until the exam</span></li>
+</ol>
 <p><strong>What counts as a review?</strong> Ten flashcard reps on the topic, one Blurt without looking, a Feynman explanation to yourself, one past-paper question on the material, or teaching it to a classmate.</p>
 <p><strong>If the test comes sooner than the calendar allows,</strong> squeeze it: a short retrieval session every day until the test, plus a quick warm-up on the day itself. Afterward, restart the calendar for anything you need to keep.</p>
-<h3 id="step-4-how-to-know-if-its-working">Step 4: How to know if it’s working</h3>
+</section>
+<section class="topic" id="step-4-how-to-know-if-its-working">
+<p class="step-label">Step 4</p>
+<h3>How to know if it’s working</h3>
 <p>The only reliable test: can you produce the information without looking at your notes? Not “does it feel familiar?” — familiarity is a feeling, not knowledge. Knowledge is retrieval.</p>
-<blockquote class="callout"><p><strong>Why you can’t trust the “I know this” feeling.</strong> Re-reading and highlighting make text feel easy and familiar, and your brain mistakes that <em>fluency</em> for actual mastery. It’s called the <strong>fluency illusion</strong>, and it’s why students who “felt ready” still bomb the test. The cure is to judge by evidence, not by feel: the only way to know what you can retrieve is to try to retrieve it. That’s what makes self-testing your honest mirror, not just a study method.</p></blockquote>
+<aside class="callout note">
+<p class="tag">Why you can’t trust the “I know this” feeling</p>
+<p>Re-reading and highlighting make text feel easy and familiar, and your brain mistakes that <em>fluency</em> for actual mastery. It’s called the <strong>fluency illusion</strong>, and it’s why students who “felt ready” still bomb the test. The cure is to judge by evidence, not by feel: the only way to know what you can retrieve is to try to retrieve it. That’s what makes self-testing your honest mirror, not just a study method.</p>
+</aside>
 <p>Use these checkpoints:</p>
 <ul>
 <li><strong>The weekly Blurt test.</strong> At the end of each week, take a blank page and write down everything you can recall from that week’s material. Nothing open, no prompts. What fills the page is learned; what’s missing is next week’s priority.</li>
@@ -842,7 +1397,10 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li><strong>The teaching test.</strong> Explain a topic to a younger sibling, a parent who doesn’t know the subject, or an imaginary student. The places where you stumble, get vague, or skip over are exactly your gaps.</li>
 <li><strong>Adjust without judgment.</strong> If something isn’t working after two weeks of honest effort, change the technique — not the verdict on yourself. Studying well is a process of experimenting and adjusting, not passing or failing.</li>
 </ul>
-<h3 id="step-5-tools-and-apps-that-help">Step 5: Tools and apps that help</h3>
+</section>
+<section class="topic" id="step-5-tools-and-apps-that-help">
+<p class="step-label">Step 5</p>
+<h3>Tools and apps that help</h3>
 <p>None of these are required — paper and a pen beat any app you don’t actually use. But the right tool can lower the friction of starting and automate the boring parts, like scheduling reviews.</p>
 <div class="table-wrap">
 <table>
@@ -857,8 +1415,14 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 </tbody>
 </table>
 </div>
-<blockquote class="callout"><p><strong>The tool trap.</strong> Setting up the perfect app, color scheme, and template can become a sophisticated form of procrastination. Pick one tool per job, spend 10 minutes setting it up, and start studying. You can refine it later.</p></blockquote>
-<h3 id="step-6-protect-your-attention">Step 6: Protect your attention</h3>
+<aside class="callout caution">
+<p class="tag">The tool trap</p>
+<p>Setting up the perfect app, color scheme, and template can become a sophisticated form of procrastination. Pick one tool per job, spend 10 minutes setting it up, and start studying. You can refine it later.</p>
+</aside>
+</section>
+<section class="topic" id="step-6-protect-your-attention">
+<p class="step-label">Step 6</p>
+<h3>Protect your attention</h3>
 <p>The best technique in the world fails if your attention is fragmented. For most students this is one of the highest-leverage changes there is — bigger than any single method.</p>
 <p><strong>Your phone:</strong></p>
 <ul>
@@ -872,53 +1436,87 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li>Bouncing between subjects mid-thought isn’t interleaving — it’s just task-switching, and it hurts.</li>
 <li>Park stray thoughts on a scrap “later” list so you don’t act on them now.</li>
 </ul>
-<h3 id="rest-sleep-and-wellbeing">Rest, sleep, and wellbeing</h3>
+</section>
+<section class="topic" id="rest-sleep-and-wellbeing">
+<h3>Rest, sleep, and wellbeing</h3>
 <p>Sleep is not the enemy of studying — it <em>is</em> studying. Much of the rewiring that turns today’s practice into lasting memory happens <em>while you sleep</em>, especially during slow-wave and REM sleep, so a short night throws away part of what you studied. A 7-hour night is worth more to your exam performance than an extra 2 hours of tired reviewing. Students who are consistently short on sleep have measurably worse recall, focus, and emotional regulation — and worse exam results, no matter how many hours they “studied.”</p>
-<blockquote class="callout"><p><strong>Non-negotiable foundations.</strong> Sleep 7–9 hours. Eat something before studying. Take real breaks. Exercise during the week — even 20-minute walks help memory and focus. These aren’t soft self-care tips. They’re cognitive performance strategies.</p></blockquote>
-<h2 id="the-one-page-cheat-sheet">The one-page cheat sheet</h2>
+<aside class="callout tip">
+<p class="tag">Non-negotiable foundations</p>
+<p>Sleep 7–9 hours. Eat something before studying. Take real breaks. Exercise during the week — even 20-minute walks help memory and focus. These aren’t soft self-care tips. They’re cognitive performance strategies.</p>
+</aside>
+</section>
+<p class="chapter-next"><a href="#the-one-page-cheat-sheet">Next chapter: The one-page cheat sheet</a></p>
+</section>
+<section class="chapter" id="the-one-page-cheat-sheet">
+<header class="chapter-head">
+<p class="chapter-num">Chapter 7</p>
+<h2>The one-page cheat sheet</h2>
+<button class="print-cheatsheet" type="button" data-print-cheatsheet>Print the cheat sheet</button>
+</header>
 <p>Everything that matters, condensed.</p>
-<blockquote class="callout"><p><strong>The whole guide in one sentence.</strong> Stop putting information <em>in</em> (re-reading, highlighting) and start pulling it <em>out</em> (testing yourself), spread across days, with your phone in another room — then sleep on it.</p></blockquote>
-<h3 id="the-14-techniques-at-a-glance">The 14 techniques at a glance</h3>
-<ol>
-<li><strong>Active recall</strong> — close the book and retrieve from memory. The number-one technique for almost everything.</li>
-<li><strong>Spaced repetition</strong> — review at growing intervals. Paired with active recall, it’s hard to beat.</li>
-<li><strong>The Feynman technique</strong> — explain it simply; the gaps are wherever you stall.</li>
-<li><strong>Cornell notes</strong> — cue column, notes, and summary, with review built into the format.</li>
-<li><strong>Pomodoro</strong> — 25 minutes on, 5 off (or 10/5 for ADHD).</li>
-<li><strong>Mind mapping</strong> — a radial map of how ideas connect.</li>
-<li><strong>Interleaving</strong> — mix problem types; harder means better.</li>
-<li><strong>Ask “why?”</strong> — link every fact to something you already know.</li>
-<li><strong>SQ3R</strong> — survey, question, read, recite, review (or just the 3R core).</li>
-<li><strong>The Blurt</strong> — brain-dump a topic, then fix the gaps.</li>
-<li><strong>Dual coding</strong> — pair words with a picture or diagram; two memory routes beat one.</li>
-<li><strong>Pretesting</strong> — guess before you learn; being wrong first primes you for the right answer.</li>
-<li><strong>Concrete examples</strong> — pin abstract ideas to two or three real cases.</li>
-<li><strong>Self-explanation</strong> — at each step, ask “why this, why now?”</li>
+<aside class="callout tip">
+<p class="tag">The whole guide in one sentence</p>
+<p>Stop putting information <em>in</em> (re-reading, highlighting) and start pulling it <em>out</em> (testing yourself), spread across days, with your phone in another room — then sleep on it.</p>
+</aside>
+<section class="topic" id="the-14-techniques-at-a-glance">
+<h3>The 14 techniques at a glance</h3>
+<ol class="glance">
+<li><b>Active recall</b><span>Close the book and retrieve from memory. The number-one technique for almost everything.</span></li>
+<li><b>Spaced repetition</b><span>Review at growing intervals. Paired with active recall, it’s hard to beat.</span></li>
+<li><b>The Feynman technique</b><span>Explain it simply; the gaps are wherever you stall.</span></li>
+<li><b>Cornell notes</b><span>Cue column, notes, and summary, with review built into the format.</span></li>
+<li><b>Pomodoro</b><span>25 minutes on, 5 off (or 10/5 for ADHD).</span></li>
+<li><b>Mind mapping</b><span>A radial map of how ideas connect.</span></li>
+<li><b>Interleaving</b><span>Mix problem types; harder means better.</span></li>
+<li><b>Ask “why?”</b><span>Link every fact to something you already know.</span></li>
+<li><b>SQ3R</b><span>Survey, question, read, recite, review (or just the 3R core).</span></li>
+<li><b>The Blurt</b><span>Brain-dump a topic, then fix the gaps.</span></li>
+<li><b>Dual coding</b><span>Pair words with a picture or diagram; two memory routes beat one.</span></li>
+<li><b>Pretesting</b><span>Guess before you learn; being wrong first primes you for the right answer.</span></li>
+<li><b>Concrete examples</b><span>Pin abstract ideas to two or three real cases.</span></li>
+<li><b>Self-explanation</b><span>At each step, ask “why this, why now?”</span></li>
 </ol>
-<h3 id="stop-doing-start-doing">Stop doing, start doing</h3>
-<div class="table-wrap">
-<table>
-<thead>
-<tr><th>Stop doing</th><th>Start doing</th></tr>
-</thead>
-<tbody>
-<tr><td>Re-reading notes</td><td>Testing yourself from memory</td></tr>
-<tr><td>Highlighting as if it’s studying</td><td>Reviewing on Day 1, 2, 5, 12, and 30</td></tr>
-<tr><td>Cramming the night before</td><td>Short, focused blocks with real breaks</td></tr>
-<tr><td>Marathon single sessions</td><td>Explaining things out loud</td></tr>
-<tr><td>Watching tutorials without doing</td><td>Sleeping 7–9 hours</td></tr>
-<tr><td>Studying with your phone in reach</td><td>Putting your phone in another room</td></tr>
-</tbody>
-</table>
+</section>
+<section class="topic" id="stop-doing-start-doing">
+<h3>Stop doing, start doing</h3>
+<div class="stop-start">
+<div class="list-card stop">
+<h4>Stop doing</h4>
+<ul><li>Re-reading notes</li><li>Highlighting as if it’s studying</li><li>Cramming the night before</li><li>Marathon single sessions</li><li>Watching tutorials without doing</li><li>Studying with your phone in reach</li></ul>
 </div>
-<h3 id="the-review-calendar">The review calendar</h3>
+<div class="list-card start">
+<h4>Start doing</h4>
+<ul><li>Testing yourself from memory</li><li>Reviewing on Day 1, 2, 5, 12, and 30</li><li>Short, focused blocks with real breaks</li><li>Explaining things out loud</li><li>Sleeping 7–9 hours</li><li>Putting your phone in another room</li></ul>
+</div>
+</div>
+</section>
+<section class="topic" id="the-review-calendar">
+<h3>The review calendar</h3>
+<ol class="timeline">
+<li><b>Day 1</b><span>Learn it</span></li>
+<li><b>Day 2</b><span>Review (active recall)</span></li>
+<li><b>Day 5</b><span>Review again</span></li>
+<li><b>Day 12</b><span>Review</span></li>
+<li><b>Day 30</b><span>Review</span></li>
+<li><b>After that</b><span>Monthly until the exam</span></li>
+</ol>
 <p><strong>Learn it on Day 1</strong>, then review on Day 2, Day 5, Day 12, and Day 30 — then monthly until the exam. A review can be 10 flashcards, a Blurt, a Feynman explanation, or one past-paper question.</p>
-<h3 id="is-it-actually-working">Is it actually working?</h3>
+</section>
+<section class="topic" id="is-it-actually-working">
+<h3>Is it actually working?</h3>
 <p>One test: <strong>can you produce it without looking?</strong> Familiarity is a feeling; knowledge is retrieval. If a technique isn’t working after two honest weeks, change the technique — not your verdict on yourself.</p>
-<h2 id="about-this-guide">About this guide</h2>
+</section>
+<p class="chapter-next"><a href="#about-this-guide">Next chapter: About this guide</a></p>
+</section>
+<section class="chapter" id="about-this-guide">
+<header class="chapter-head">
+<p class="chapter-num">Chapter 8</p>
+<h2>About this guide</h2>
+</header>
 <p>This guide collects the study methods with the strongest support in cognitive science and turns them into steps you can use tonight. It was written for students from high school through graduate school. It is installed alongside Socrates, a study coach for Claude Code, so that it is always on hand when you study — but it stands on its own, with or without a coach.</p>
 <p>It was revised in June 2026 after an independent review by two AI models (Gemini and DeepSeek) against the learning-science research, and the studies it names were checked against the original papers in September 2026. Where the evidence for a technique is thinner, the guide says so.</p>
-<h3 id="references">References</h3>
+<section class="topic" id="references">
+<h3>References</h3>
 <ul>
 <li>Dunlosky, J., Rawson, K. A., Marsh, E. J., Nathan, M. J., &amp; Willingham, D. T. (2013). Improving students’ learning with effective learning techniques: Promising directions from cognitive and educational psychology. <em>Psychological Science in the Public Interest, 14</em>(1), 4–58.</li>
 <li>McDaniel, M. A., Howard, D. C., &amp; Einstein, G. O. (2009). The read-recite-review study strategy: Effective and portable. <em>Psychological Science, 20</em>(4), 516–522.</li>
@@ -926,30 +1524,129 @@ pre code { background: none; padding: 0; font-size: 14.5px; }
 <li>Ruiz Pardo, A. C., &amp; Minda, J. P. (2022). Reexamining the “brain drain” effect: A replication of Ward et al. (2017). <em>Acta Psychologica, 230</em>, 103717.</li>
 <li>Ward, A. F., Duke, K., Gneezy, A., &amp; Bos, M. W. (2017). Brain drain: The mere presence of one’s own smartphone reduces available cognitive capacity. <em>Journal of the Association for Consumer Research, 2</em>(2), 140–154.</li>
 </ul>
-  </article>
+</section>
+</section>
+</article>
 </div>
 
 <footer class="site-foot">
   <div class="wrap">
-    <p>To print this guide, use your browser’s Print command. The cheat sheet prints on a page of its own.</p>
+    <p>To print the whole guide, use your browser’s Print command; the cheat sheet has a button that prints just that page.</p>
   </div>
 </footer>
 
 <script>
 (function () {
-  var links = document.querySelectorAll('.toc a');
-  if (!links.length || !('IntersectionObserver' in window)) return;
-  var byId = {};
-  links.forEach(function (a) { byId[a.getAttribute('href').slice(1)] = a; });
-  var spy = new IntersectionObserver(function (entries) {
-    entries.forEach(function (e) {
-      if (!e.isIntersecting) return;
-      links.forEach(function (a) { a.removeAttribute('aria-current'); });
-      var a = byId[e.target.id];
-      if (a) a.setAttribute('aria-current', 'true');
+  var doc = document;
+  doc.documentElement.classList.add('js');
+
+  var chapters = [].slice.call(doc.querySelectorAll('.chapter'));
+  var tabs = [].slice.call(doc.querySelectorAll('.chapters a'));
+  var bar = doc.querySelector('.chapters');
+  if (chapters.length > 1 && bar) {
+    doc.documentElement.classList.add('tabbed');
+    var untilFound = 'onbeforematch' in doc.body;
+    var show = function (target) {
+      doc.documentElement.classList.toggle('show-all', target === 'all');
+      chapters.forEach(function (c) {
+        if (target === 'all' || c === target) c.removeAttribute('hidden');
+        else if (untilFound) c.setAttribute('hidden', 'until-found');
+        else c.hidden = true;
+      });
+      tabs.forEach(function (a) {
+        var id = a.getAttribute('href').slice(1);
+        if (target === 'all' ? id === 'all' : id === target.id) a.setAttribute('aria-current', 'true');
+        else a.removeAttribute('aria-current');
+      });
+    };
+    // Show the chapter the address points to. A link to a section scrolls to it; switching
+    // chapters scrolls only when the reader is already past the header.
+    var route = function () {
+      var id = decodeURIComponent(location.hash.slice(1));
+      var el = id && id !== 'all' ? doc.getElementById(id) : null;
+      var chapter = el ? (el.classList.contains('chapter') ? el : el.closest('.chapter')) : null;
+      show(id === 'all' ? 'all' : (chapter || chapters[0]));
+      if (el && el !== chapter) { el.scrollIntoView({ block: 'start', behavior: 'instant' }); return; }
+      var barTop = bar.getBoundingClientRect().top + window.pageYOffset;
+      if (id && window.pageYOffset > barTop) window.scrollTo({ top: barTop, behavior: 'instant' });
+    };
+    tabs.forEach(function (a) {
+      a.addEventListener('click', function (e) {
+        e.preventDefault();
+        history.pushState(null, '', a.getAttribute('href'));
+        route();
+      });
     });
-  }, { rootMargin: '0px 0px -75% 0px' });
-  document.querySelectorAll('.prose h2[id]').forEach(function (h) { spy.observe(h); });
+    chapters.forEach(function (c) {
+      // Find-in-page reveals a hidden chapter; switch to it.
+      c.addEventListener('beforematch', function () {
+        show(c);
+        history.replaceState(null, '', '#' + c.id);
+      });
+    });
+    window.addEventListener('hashchange', route);
+    window.addEventListener('popstate', route);
+    route();
+  }
+
+  [].forEach.call(doc.querySelectorAll('[data-finder]'), function (box) {
+    var tables = box.querySelectorAll('table');
+    if (tables.length < 2) return;
+    var questions = ['What are you studying?', 'How much time do you have?'];
+    var hint = 'Pick one from each row for a plan.';
+    var chosen = [null, null];
+    var finder = doc.createElement('div');
+    finder.className = 'finder';
+    var answer = doc.createElement('div');
+    answer.className = 'answer';
+    answer.setAttribute('aria-live', 'polite');
+    answer.textContent = hint;
+    var render = function () {
+      if (!chosen[0] || !chosen[1]) { answer.textContent = hint; return; }
+      var what = chosen[0].cells, time = chosen[1].cells;
+      var when = time[0].textContent;
+      var title = doc.createElement('strong');
+      title.textContent = what[0].textContent + ', ' + when.charAt(0).toLowerCase() + when.slice(1);
+      answer.innerHTML = what[1].innerHTML + ' ' + time[1].innerHTML;
+      answer.insertBefore(title, answer.firstChild);
+    };
+    [0, 1].forEach(function (g) {
+      var q = doc.createElement('p');
+      q.className = 'q';
+      q.textContent = questions[g];
+      var row = doc.createElement('div');
+      row.className = 'picks';
+      row.setAttribute('role', 'group');
+      row.setAttribute('aria-label', questions[g]);
+      [].forEach.call(tables[g].tBodies[0].rows, function (tr) {
+        var b = doc.createElement('button');
+        b.type = 'button';
+        b.className = 'pick';
+        b.setAttribute('aria-pressed', 'false');
+        b.textContent = tr.cells[0].textContent;
+        b.addEventListener('click', function () {
+          [].forEach.call(row.children, function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+          chosen[g] = tr;
+          render();
+        });
+        row.appendChild(b);
+      });
+      finder.appendChild(q);
+      finder.appendChild(row);
+    });
+    finder.appendChild(answer);
+    box.parentNode.insertBefore(finder, box);
+    box.classList.add('enhanced');
+  });
+
+  var printButton = doc.querySelector('[data-print-cheatsheet]');
+  if (printButton) {
+    printButton.addEventListener('click', function () {
+      doc.body.classList.add('cheatsheet-only');
+      window.print();
+    });
+    window.addEventListener('afterprint', function () { doc.body.classList.remove('cheatsheet-only'); });
+  }
 })();
 </script>
 </body>
