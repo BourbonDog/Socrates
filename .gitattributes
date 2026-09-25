@@ -2,3 +2,6 @@
 # identically across the students' different machines (Windows/macOS/Linux)
 # and don't create sync churn.
 * text=auto eol=lf
+
+# Fonts are binary; never normalize them.
+*.woff2 binary

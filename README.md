@@ -1,64 +1,79 @@
 # Socrates
 
-A Socratic study coach — a [Claude Code](https://claude.com/claude-code) skill that helps students from high school through grad school actually *learn* their material instead of just rereading it. It diagnoses what you're studying, picks a technique backed by cognitive science (active recall, spaced repetition, the Feynman technique, and more), and either studies **with** you or coaches you while **you** drive — and it never just hands over the answer, because being handed the answer is exactly what *doesn't* build memory.
+A study coach for [Claude Code](https://claude.com/claude-code), for students from high school through graduate school. It works out what you're studying and what you need from it, picks a technique from the learning research — active recall, spaced repetition, the Feynman technique, and others — and either studies *with* you or coaches you while *you* drive. It doesn't hand over answers: retrieving an answer yourself is what builds the memory.
 
-It also remembers each learner and runs **spaced-repetition reviews** — so days later it can say "time to review Ch. 6" and actually make the spacing happen.
+It remembers each student and schedules spaced reviews, so a few days later it opens with "your Bio Ch. 6 review is due" before anything new.
 
-**Website:** [bourbondog.github.io/Socrates](https://bourbondog.github.io/Socrates/) — overview, install, and the [study guide readable online](https://bourbondog.github.io/Socrates/study-guide/).
+## The study guide
 
-## What's in here
+Socrates is built on *How to Actually Study*, a practical guide to studying well: fourteen techniques and how to apply each one, what works for each subject, adaptations for ADHD, dyslexia, anxiety, autism, and dyscalculia, how to build a study system, and a one-page cheat sheet.
 
-- `skills/socrates/` — the skill itself (this is the part you install).
-- `docs/how-to-actually-study.md` — the evidence base behind the coaching.
-- `docs/design.md` — how the skill is put together.
+The guide installs with the skill, so every student has their own copy, offline:
+
+- `study-guide.html` — the readable copy. Double-click it to open it in any browser; it prints cleanly.
+- `study-guide.md` — the same text, which Socrates reads when it explains a technique.
+
+After installing, the guide is at `%USERPROFILE%\.claude\skills\socrates\study-guide.html` on Windows, or `~/.claude/skills/socrates/study-guide.html` on macOS and Linux. You can also just ask Socrates: "show me the study guide." In this repository it's [`skills/socrates/study-guide.md`](skills/socrates/study-guide.md).
 
 ## Requirements
 
-- **[Claude Code](https://claude.com/claude-code).** That's the only requirement.
-- No Python, Node, scripts, accounts, or internet needed at runtime. The skill is pure markdown, so it runs anywhere Claude Code runs — Windows, macOS, or Linux.
+- [Claude Code](https://claude.com/claude-code). That's all.
+- No Python, Node, scripts, accounts, or internet connection are needed to use it. The skill is plain text, so it runs anywhere Claude Code runs: Windows, macOS, or Linux.
 
 ## Install
 
-Copy the `skills/socrates` folder into your personal Claude skills directory.
+Clone this repository (or download it as a ZIP from GitHub and unzip it), then run the copy from inside it.
 
 **Windows (PowerShell):**
+
 ```powershell
-Copy-Item -Recurse -Force ".\skills\socrates" "$env:USERPROFILE\.claude\skills\socrates"
+New-Item -ItemType Directory -Force "$env:USERPROFILE\.claude\skills\socrates" | Out-Null
+Copy-Item -Recurse -Force ".\skills\socrates\*" "$env:USERPROFILE\.claude\skills\socrates"
 ```
 
 **macOS / Linux:**
+
 ```bash
-mkdir -p ~/.claude/skills && cp -R skills/socrates ~/.claude/skills/socrates
+mkdir -p ~/.claude/skills/socrates && cp -R skills/socrates/. ~/.claude/skills/socrates/
 ```
 
-(Clone or download this repo first, then run the copy from inside it.)
-
-Then open Claude Code and just say what you're studying.
+This puts one folder, `socrates`, into your Claude skills folder: the coaching instructions (`SKILL.md`), their reference notes, and the study guide. Then open Claude Code and say what you're studying.
 
 ## Using it
 
 Start however feels natural:
 
-- "Help me study for my biology test on cell respiration."
-- "I don't get this." *(then paste notes, a link, or a photo of the problem)*
+- "Help me study for my biology test on cellular respiration."
+- "I don't get this." *(then paste your notes, a link, or a photo of the problem)*
 - "Quiz me on the French Revolution."
 - "Make me a study plan for finals."
+- "Show me the study guide."
 
-The first time, it asks four quick questions (name, grade/year, subjects, anything about how you learn) and saves a profile. After that it greets you, runs any reviews that are due, and picks up where you left off.
+What happens in a session:
+
+1. **It loads your profile.** The first time, it asks four quick questions — your name, your grade or year, your subjects, and anything about how you learn — and saves a profile.
+2. **Reviews come first.** Anything due for review gets a short retrieval check before new material.
+3. **It takes in what you brought** — notes, a reading, slides, a photo, a link, a problem set (which it won't solve for you), or just a topic.
+4. **It chooses a technique** for the subject and your goal, and tells you which one, why, and where it is in the study guide. If there's a test, the date shapes the plan.
+5. **You choose the mode.** *Study with me:* it runs the technique and quizzes you as you go. *Coach me:* you do the work; it sets up the practice and checks what you produce.
+6. **The session runs retrieval-first.** Gaps get worked, and answers get earned. "I get it" is checked with recall, notes closed.
+7. **It closes the loop.** The session is logged and the next reviews are scheduled — Day 2, 5, 12, and 30, then monthly, or a short review every day when a test is sooner than that.
 
 ## Where your progress is saved
 
-Profiles and review schedules live **outside** the skill, so updating or reinstalling never wipes them:
+Profiles and review schedules live **outside** the skill's folder, so updating or reinstalling never touches them:
 
 - **Windows:** `%USERPROFILE%\.claude\socrates\profiles\`
 - **macOS / Linux:** `~/.claude/socrates/profiles/`
 
-They're plain markdown — a parent or student can open and read them anytime.
+They're plain markdown. A parent or student can open one and read it at any time.
 
 ## Updating
 
-Pull the latest and re-run the install copy above. Your profiles are untouched.
+Pull the latest version (or download it again) and run the same copy commands. They overwrite the skill's files in place; your profiles are untouched.
 
----
+## What's in this repository
 
-Built on the "How to Actually Study" guide in [`docs/how-to-actually-study.md`](docs/how-to-actually-study.md).
+- `skills/socrates/` — the skill. This is the part you install, and it includes the study guide.
+- `docs/` — the website at [bourbondog.github.io/Socrates](https://bourbondog.github.io/Socrates/), which publishes the same guide online, and [`design.md`](docs/design.md), which explains how the skill is put together.
+- `tools/build-guide.mjs` — for maintainers: after editing `study-guide.md`, run `node tools/build-guide.mjs` to rebuild the guide's two HTML copies, and `node --test tools/*.test.mjs` to check them.
